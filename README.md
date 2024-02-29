@@ -14,8 +14,16 @@ Para ver como funciona, puedes corres este ejemplo:
 
 
 ```{r}
-# Ejemplo para descargar los históricos diarios de grupo Alfa, Microsoft en EEUU, Micrososft en México y el índice S&P/BMV IPC:
-tickers=c("ALFAA.MX","MSFT","MSFT.MX","^MXX")
+# Ejemplo para descargar los históricos diarios de grupo Alfa, Microsoft en EEUU, Micrososft en México y el índice S&P/BMV IPC, desde el 1 de enrdo de 2023 a la fecha actual:
+tickerV=c("ALFAA.MX","MSFT","MSFT.MX","^MXX")
+deD="2023-01-01"
+hastaD=Sys.Date()
+per="D"
 
+Datos=historico_multiples_precios(tickers=tickerV,de=deD,hasta=hastaD,periodicidad=per)
 ```
-historico_multiples_precios=function(tickers,de,hasta,periodicidad="D")
+En este ejemplo, el objeto Datos es un objeto tipo lista con 3 de estos:
+
+1. Una tabla con los precios de cierre y fechas homogeneizadas a las del primer ticker (ALFAA.MX).
+2. Una tabla similar pero cn las variaciones porcentuales en tiempo contínuo.
+3. Los objetos de los precios extraidos desde Yahoo Finance para cada ticker.
