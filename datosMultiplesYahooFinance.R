@@ -16,7 +16,7 @@ if (!require(zoo)) {install.packages('zoo')
   library(zoo)} else {library(zoo)}
 
 # Comandos a ejecutar para extraer información de Yahoo para múltiples RICS:====
-
+ 
 
 historico_multiples_precios=function(tickers,de,hasta,periodicidad="D"){
   
