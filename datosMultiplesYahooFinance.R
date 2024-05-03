@@ -9,12 +9,14 @@
 # V 1.0. 29-feb-2024: Funciones historico_multiples_precios y historico_precio_mkts con readme en GitHub.
 # V 2.0 03-may-2024: Se agrega función historico_multiples_preciosFX para convertir a la divisa deseada en Yahoo.
 
-# Comando para descargas múltiples:
+# Verificación y/o instalación de las librerías necesarias:
+if (!require(tidyverse)) {install.packages('tidyverse')
+  library(tidyverse)} else {library(tidyverse)}
+if (!require(zoo)) {install.packages('zoo')
+  library(zoo)} else {library(zoo)}
 
 # Comandos a ejecutar para extraer información de Yahoo para múltiples RICS:====
 
-library(tidyverse)
-library(zoo)
 
 historico_multiples_precios=function(tickers,de,hasta,periodicidad="D"){
   
