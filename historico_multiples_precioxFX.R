@@ -1,4 +1,5 @@
-historico_multiples_preciosFX=function(tickers,FX,de,hasta,periodicidad="D"){
+
+historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,periodicidad="D"){
   
   nombres=tickers
   
@@ -13,9 +14,7 @@ historico_multiples_preciosFX=function(tickers,FX,de,hasta,periodicidad="D"){
   }
 
 # Extrae la divisa a convertir en algunos casos  
-FXs=unique(FX)  
-localId=which(FXs=="Local")  
-FXs=FXs[-localId]
+FX=FXrate
 
 
   #length(nombres)
@@ -118,26 +117,22 @@ FXs=FXs[-localId]
       tabla.salida[naRowId,cuenta+1]=tabla.salida[naRowId+1,cuenta+1]
     }
     
-    # convierte a moneda local según se indica en el objeto FX:
-    
-    moneda=FX[cuenta]
-    
-    if (!moneda=="Local"){
-     
-    # Extrae los tipos de cambio históricos:
-    
-    queryStringFX=paste0("FX[cuenta]","=historico_precio_mkts('",FX[cuenta],
-                       "',de=de,hasta=hasta,periodicidad=periodicidad)")
-    
-    # Homogeneiza la serie de tiempok
-    
-    eval(parse(text=queryStringFX))  
-    
     }
     # cuenta loop ends here:  
-  }  
+    
   
   
+# convierte a moneda local según se indica en el objeto FX:
+
+
+  # Extrae los tipos de cambio históricos:
+  
+  queryStringFX=paste0("FXcuote","=historico_precio_mkts('",FXrate,
+                       "',de=de,hasta=hasta,periodicidad=periodicidad)")
+  eval(parse(text=queryStringFX)) 
+  
+  conjuntoSalida[["FXrate"]]=FXcuote
+  # Homogeneiza la serie de tiempo:
   
   # Genera ajustes finos de la tabla de salida y la anexa al objeto
   colnames(tabla.salida)=c("Date",nombres)
@@ -146,7 +141,31 @@ FXs=FXs[-localId]
   
   conjuntoSalida[["tablaPrecios"]]=tabla.salida
   
-  # calcular rendimientos cont?nuos y los anexa al objeto:
+  tabla.salidaFX=tabla.salida
+  
+  # Convierte tabla.salida conforme a los T.C. de FXrate:
+  
+  tablaFX=data.frame(Date=tabla.salida$Date,FX=NA)
+  
+  for (a in 1:nrow(tablaFX)){
+    fxColId=min(which(FXcuote$Date==tablaFX$Date[a]))
+    
+    if (length(fxColId)>0){
+      tablaFX$FX[a]=FXcuote$Close[fxColId]
+    }
+    
+  }
+  
+  tablaFX$FX=na.locf(tablaFX$FX)
+  
+  for (a in 2:ncol(tabla.salidaFX)){
+    tabla.salidaFX[,a]=tabla.salidaFX[,a]*tablaFX$FX
+  }
+  
+  conjuntoSalida[["tablaFX"]]=tablaFX
+  conjuntoSalida[["tablaPreciosFX"]]=tabla.salidaFX
+  
+  # calcular rendimientos contínuos y los anexa al objeto:
   
   tablaRendimientosC=tabla.salida
   
@@ -155,6 +174,15 @@ FXs=FXs[-localId]
   
   tablaRendimientosC=tablaRendimientosC[-1,]
   
+  # FX converted:
+  tablaRendimientosCFX=tabla.salidaFX
+  
+  tablaRendimientosCFX[2:nrow(tabla.salidaFX),2:ncol(tabla.salidaFX)]=log(as.numeric(as.matrix(tabla.salidaFX[2:nrow(tabla.salidaFX),2:ncol(tabla.salidaFX)])))-
+    log(as.numeric(as.matrix(tabla.salidaFX[1:(nrow(tabla.salidaFX)-1),2:ncol(tabla.salidaFX)])))
+  
+  tablaRendimientosCFX=tablaRendimientosCFX[-1,]
+  
+  
   # Corrige valores inf en los valores estimados e iguala a cero:
   
   for (a in 2:ncol(tablaRendimientosC)){
@@ -162,12 +190,24 @@ FXs=FXs[-localId]
     if (length(naRowId)>0){
       tablaRendimientosC[naRowId,a]=0
     }
-  }  
+    
+    for (a in 2:ncol(tablaRendimientosCFX)){
+      naRowId=which(is.infinite(tablaRendimientosCFX[,a]))
+      if (length(naRowId)>0){
+        tablaRendimientosCFX[naRowId,a]=0
+      }    
+   
+  }
+
+
+  }
   
-  # Guegra la tabla de rendimientos en el objeto de salida:    
+  # Agrega la tabla de rendimientos en el objeto de salida:    
   conjuntoSalida[["tablaRendimientosC"]]=tablaRendimientosC
+  conjuntoSalida[["tablaRendimientosCFX"]]=tablaRendimientosCFX
   conjuntoSalida[["nombres"]]=nombres
   
   return(conjuntoSalida)
   # function ends here:
-}
+  
+  }
