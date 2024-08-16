@@ -314,7 +314,7 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   
   tabla.salida=as.data.frame(tabla.salida)
   
-  conjuntoSalida[["tablaPrecios"]]=tabla.salida
+  conjuntoSalida[["tablaYahooFinance"]]=tabla.salida
   
   tabla.salidaFX=tabla.salida
   
@@ -331,8 +331,7 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   }
   tablaFX=tablaFX[,-(length(nombres)+2)]
   
-  conjuntoSalida[["tablaFX"]]=tablaFX
-  conjuntoSalida[["tablaPreciosFX"]]=tabla.salidaFX
+  conjuntoSalida[["tablaPreciosFX"]]=tablaFX
   
   # calcular rendimientos contínuos y los anexa al objeto:
   
