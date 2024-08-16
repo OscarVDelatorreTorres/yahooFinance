@@ -368,7 +368,6 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
       
     }
     
-    
   }
   
   # Agrega la tabla de rendimientos en el objeto de salida:    
