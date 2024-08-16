@@ -8,7 +8,7 @@
 
 # V 1.0. 29-feb-2024: Funciones historico_multiples_precios y historico_precio_mkts con readme en GitHub.
 # V 2.0 03-may-2024: Se agrega función historico_multiples_preciosFX para convertir a la divisa deseada en Yahoo.
-# V 2.1 15-ago-2024: Se corrige un error de conversión a moneda de preferencia con la función merge de la librería zoo.
+# V 2.1b 15-ago-2024: Se corrige un error de conversión a moneda de preferencia con la función merge de la librería zoo.
 
 # Verificación y/o instalación de las librerías necesarias:
 if (!require(tidyverse)) {install.packages('tidyverse')
@@ -344,7 +344,7 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   tablaRendimientosC=tablaRendimientosC[-1,]
   
   # FX converted:
-  tablaRendimientosCFX=tabla.salidaFX
+  tablaRendimientosCFX=tablaFX
   
   tablaRendimientosCFX[2:nrow(tabla.salidaFX),2:ncol(tabla.salidaFX)]=log(as.numeric(as.matrix(tabla.salidaFX[2:nrow(tabla.salidaFX),2:ncol(tabla.salidaFX)])))-
     log(as.numeric(as.matrix(tabla.salidaFX[1:(nrow(tabla.salidaFX)-1),2:ncol(tabla.salidaFX)])))
