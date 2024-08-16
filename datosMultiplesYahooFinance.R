@@ -295,10 +295,14 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   }
   # cuenta loop ends here:  
   
+  # Homogeneiza la serie de tiempo:
   
+  # Genera ajustes finos de la tabla de salida y la anexa al objeto
+  colnames(tabla.salida)=c("Date",nombres)
+  tabla.salida=as.data.frame(tabla.salida)  
+  conjuntoSalida[["tablaYahooFinance"]]=tabla.salida 
   
   # convierte a moneda local según se indica en el objeto FX:
-  
   
   # Extrae los tipos de cambio históricos:
   
@@ -307,14 +311,7 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   eval(parse(text=queryStringFX)) 
   
   conjuntoSalida[["FXrate"]]=FXcuote
-  # Homogeneiza la serie de tiempo:
-  
-  # Genera ajustes finos de la tabla de salida y la anexa al objeto
-  colnames(tabla.salida)=c("Date",nombres)
-  
-  tabla.salida=as.data.frame(tabla.salida)
-  
-  conjuntoSalida[["tablaYahooFinance"]]=tabla.salida
+
   
   tabla.salidaFX=tabla.salida
   
