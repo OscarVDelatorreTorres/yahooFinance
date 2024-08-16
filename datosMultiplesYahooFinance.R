@@ -8,6 +8,7 @@
 
 # V 1.0. 29-feb-2024: Funciones historico_multiples_precios y historico_precio_mkts con readme en GitHub.
 # V 2.0 03-may-2024: Se agrega función historico_multiples_preciosFX para convertir a la divisa deseada en Yahoo.
+# V 2.1 15-ago-2024: Se corrige un error de conversión a moneda de preferencia con la función merge de la librería zoo.
 
 # Verificación y/o instalación de las librerías necesarias:
 if (!require(tidyverse)) {install.packages('tidyverse')
@@ -254,9 +255,9 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
         idFecha=eval(parse(text=paste0("max(which(",nombres[cuenta],"$Date<=tabla.salida$Date[cuenta2]))")))
         eval(parse(text=paste0("tabla.salida$Val",cuenta,"[cuenta2]=",nombres[cuenta],"$Adj.Close[idFecha]")))
       }
-      
+      # Loop cuenta2 (fechas homogeneizadas) ends here:        
     }
-    # Loop cuenta2 (fechas homogeneizadas) ends here:  
+
     
     # Corrige los textos "null" propios de Yahoo Finance y los convierte 
     # a valor NA para ser corregidos posteriormente:
@@ -317,24 +318,18 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   
   tabla.salidaFX=tabla.salida
   
+  tabla.salidaFX=merge(tabla.salidaFX,FXcuote,by="Date",all.x=F)
   # Convierte tabla.salida conforme a los T.C. de FXrate:
   
-  tablaFX=data.frame(Date=tabla.salida$Date,FX=NA)
+  tabla.salidaFX$Adj.Close=na.locf(tabla.salidaFX$Adj.Close)
   
-  for (a in 1:nrow(tablaFX)){
-    fxColId=min(which(FXcuote$Date==tablaFX$Date[a]))
-    
-    if (length(fxColId)>0){
-      tablaFX$FX[a]=FXcuote$Close[fxColId]
-    }
-    
+  
+  tablaFX=tabla.salidaFX[,c(1:(length(nombres)+1),((length(nombres)+1)+5))]
+  
+  for (cuenta in 2:(length(nombres)+1)){
+    tablaFX[,cuenta]=as.numeric(tablaFX[,cuenta])*tablaFX[,(length(nombres)+2)]  
   }
-  
-  tablaFX$FX=na.locf(tablaFX$FX)
-  
-  for (a in 2:ncol(tabla.salidaFX)){
-    tabla.salidaFX[,a]=tabla.salidaFX[,a]*tablaFX$FX
-  }
+  tablaFX=tablaFX[,-(length(nombres)+2)]
   
   conjuntoSalida[["tablaFX"]]=tablaFX
   conjuntoSalida[["tablaPreciosFX"]]=tabla.salidaFX
