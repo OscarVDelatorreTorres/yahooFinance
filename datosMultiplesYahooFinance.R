@@ -346,8 +346,8 @@ historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,period
   # FX converted:
   tablaRendimientosCFX=tablaFX
   
-  tablaRendimientosCFX[2:nrow(tabla.salidaFX),2:ncol(tabla.salidaFX)]=log(as.numeric(as.matrix(tabla.salidaFX[2:nrow(tabla.salidaFX),2:ncol(tabla.salidaFX)])))-
-    log(as.numeric(as.matrix(tabla.salidaFX[1:(nrow(tabla.salidaFX)-1),2:ncol(tabla.salidaFX)])))
+  tablaRendimientosCFX[2:nrow(tablaRendimientosCFX),2:ncol(tablaRendimientosCFX)]=log(as.numeric(as.matrix(tablaRendimientosCFX[2:nrow(tablaRendimientosCFX),2:ncol(tablaRendimientosCFX)])))-
+    log(as.numeric(as.matrix(tablaRendimientosCFX[1:(nrow(tablaRendimientosCFX)-1),2:ncol(tablaRendimientosCFX)])))
   
   tablaRendimientosCFX=tablaRendimientosCFX[-1,]
   
