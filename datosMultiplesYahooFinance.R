@@ -23,6 +23,8 @@ if (!require(reticulate)) {install.packages('reticulate')
   library(reticulate)} else {library(reticulate)}
 if (!require(tidyquant)) {install.packages('tidyquant')
   library(tidyquant)} else {library(tidyquant)}
+if (!require(imputeTS)) {install.packages('imputeTS')
+  library(imputeTS)} else {library(imputeTS)}
 
 # Comandos a ejecutar para extraer información de Yahoo para múltiples RICS:====
  
