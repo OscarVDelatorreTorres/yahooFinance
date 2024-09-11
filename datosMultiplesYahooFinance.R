@@ -29,10 +29,12 @@ if (!require(imputeTS)) {install.packages('imputeTS')
 # Comandos a ejecutar para extraer información de Yahoo para múltiples RICS:====
  
 
-historico_multiples_precios=function(tickers,de,hasta,periodicidad="D"){
+historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
+                                     fxRate="USDMXN=X",
+                                     whichToFX="none"){
   
   nombres=tickers
-  
+  convertFXOk=FALSE
   # Crea los nombres de la tabla de salida sin caracteres especiales de los tickers de ?ndices:
   for (cuenta in 1:length(tickers)){
     if (substr(nombres[cuenta],1,1)=="^"){
@@ -41,6 +43,35 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D"){
     
     nombres[cuenta]=str_replace(nombres[cuenta],"=","")
     
+  }
+  
+  if (is.logical(whichToFX)) {
+    
+    if (length(whichToFX)==length(tickers)){
+      convertFXOk=TRUE
+      
+    } else {
+      stop("El vector de conversión a moneda  whichToFX no tiene la misma longitud que el vector de tickers.")
+    }
+    
+  } else {
+
+    if (is.character(whichToFX)) {
+      switch(whichToFX,
+             "All"={ whichToFX=rep(TRUE,length(tickers)) 
+             convertFXOk=TRUE},
+             "all"={ whichToFX=rep(TRUE,length(tickers)) 
+             convertFXOk=TRUE},
+             "ALL"={ whichToFX=rep(TRUE,length(tickers)) 
+             convertFXOk=TRUE},
+             "NONE"={ whichToFX=rep(FALSE,length(tickers)) },
+             "none"={ whichToFX=rep(FALSE,length(tickers)) },
+             "None"={ whichToFX=rep(FALSE,length(tickers)) },
+             "NoNe"={ whichToFX=rep(FALSE,length(tickers)) }
+             )
+    }
+
+
   }
   
   
@@ -219,9 +250,10 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D"){
 
 
 # Comando de extracción de precios de ticker individual ====
-historico_precio_mkts <- function(ticker,de,hasta,periodicidad2)
+historico_precio_mkts <- function(ticker,de,hasta,periodicidad2,fxRate="none")
 {
-  stringTicker=substr(ticker,1,1)
+ 
+   stringTicker=substr(ticker,1,1)
   
   if (stringTicker=="^"){
     ticker2=paste0("%5E",substr(ticker,2,nchar(ticker)))  
@@ -234,21 +266,56 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad2)
 # deUnix=dateToUNIX(de)
 #  hastaUnix=dateToUNIX(hasta)
   
-  switch(periodicidad2,
-         "D"={per="1d"},
-         "W"={per="1wk"},
-         "M"={per="1mo"}
-         )
-  
 # Extrae datos históricos de cotizaciones con tidyquant:
   
 tablaDatos = tq_get(ticker, from = de, to  = hasta)
+
+if (!(fxRate=="none")){
+  
+  tablaDatosFX = tq_get(fxRate, from = de, to  = hasta)
+  tablaDatosFX=data.frame(date=tablaDatosFX$date,
+                          FX=tablaDatosFX$adjusted)
+  
+}
+
+tablaDatosFX=tablaDatos%>%merge(tablaDatosFX,by="date",all.x=T)
+
+tablaDatosFX=data.frame(date=tablaDatosFX$date,
+                        FX=tablaDatosFX$adjusted)
+
+tablaDatos$open=tablaDatos$open*tablaDatosFX$FX
+tablaDatos$high=tablaDatos$high*tablaDatosFX$FX
+tablaDatos$low=tablaDatos$low*tablaDatosFX$FX
+tablaDatos$close=tablaDatos$close*tablaDatosFX$FX
+tablaDatos$adjusted=tablaDatos$adjusted*tablaDatosFX$FX
+
+# Convierte la periodicidad solicitada:
+
+switch(periodicidad2,
+       "W"={
+         tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.weekly)
+         
+       },
+       "M"={
+         tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.monthly)
+       },
+       "Q"={
+         tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.quarterly)
+       },
+       "Y"={
+         tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.yearly)
+       }        
+)
+
 
 # Agrega P/L, rendimientos y rendimientos contínuos:
 
 tablaDatos=tablaDatos%>%mutate(PL=adjusted / lag(adjusted), 
                                rArit=(adjusted/lag(adjusted)-1)*100,
                                rCont=(log(adjusted) - lag(log(adjusted)))*100)
+
+
+
 return(tablaDatos)
 }
 
