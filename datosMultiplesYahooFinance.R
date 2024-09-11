@@ -10,12 +10,19 @@
 # V 2.0 03-may-2024: Se agrega función historico_multiples_preciosFX para convertir a la divisa deseada en Yahoo.
 # V 2.1c 15-ago-2024: Se corrige un error de conversión a moneda de preferencia con la función merge de la librería zoo.
 # V 2.1c 27-ago-2024: Se corrige un error en la converciòn cambiaria de las acciones.
+# V 3.0  11-sept-2024: Dejó de funcionar la URL y se solventó al utilizar la librería de tydiquant,
+#                      así como yfinance de Python, por medio de reticulates para descargar información
+#                      de fundamentald e Yahoo Finance.
 
 # Verificación y/o instalación de las librerías necesarias:
 if (!require(tidyverse)) {install.packages('tidyverse')
   library(tidyverse)} else {library(tidyverse)}
 if (!require(zoo)) {install.packages('zoo')
   library(zoo)} else {library(zoo)}
+if (!require(reticulate)) {install.packages('reticulate')
+  library(reticulate)} else {library(reticulate)}
+if (!require(tidyquant)) {install.packages('tidyquant')
+  library(tidyquant)} else {library(tidyquant)}
 
 # Comandos a ejecutar para extraer información de Yahoo para múltiples RICS:====
  
@@ -48,341 +55,166 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D"){
     
     eval(parse(text=queryString))
     
+
+    
     # Anexa las columnas de datos a la tabla total de salida:
     
     if (cuenta<2){
       
-      # Guarda lo extra?do de precios al objeto tipo "lista" de salida:
+      # Guarda lo extraído de precios al objeto tipo "lista" de salida:
       
-      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=",nombres[cuenta],")")))
+      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=",nombres[cuenta],")")))       
       
-      tablaString=paste0("tabla.salida=",
+      # Guarda lo extraído de precios al objeto tipo "lista" de salida:
+      
+      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=",nombres[cuenta],")")))      
+    
+      # Inserta valores de la primera serie de tiempo en la tabla de precios de salida:
+      tablaString=paste0("tabla.precios=",
                          "data.frame(Date=",
                          nombres[cuenta],
-                         "$Date,",nombres[cuenta],"=",
-                         nombres[cuenta],"$Adj.Close",
+                         "$date,",nombres[cuenta],"=",
+                         nombres[cuenta],"$adjusted",
                          ")")
-      
       eval(parse(text=tablaString))
       
+      tabla.precios[,2]=na_locf(tabla.precios[,2],option="locf")
       
+      
+      
+      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
+      tablaString2=paste0("tabla.PL=",
+                          "data.frame(Date=",
+                          nombres[cuenta],
+                          "$date,",nombres[cuenta],"=",
+                          nombres[cuenta],"$PL",
+                          ")")
+      
+      eval(parse(text=tablaString2))  
+      tabla.PL=tabla.PL[-1,]
+      
+      tabla.PL[,2]=na_replace(tabla.PL[,2],fill=0)
+      
+      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
+      tablaString3=paste0("tabla.rendimientosArit=",
+                         "data.frame(Date=",
+                         nombres[cuenta],
+                         "$date,",nombres[cuenta],"=",
+                         nombres[cuenta],"$rArit",
+                         ")")
+      
+      eval(parse(text=tablaString3))    
+      
+      tabla.rendimientosArit=tabla.rendimientosArit[-1,]
+      
+      tabla.rendimientosArit[,2]=na_replace(tabla.rendimientosArit[,2],fill=0)
+      
+      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
+      tablaString4=paste0("tabla.rendimientosCont=",
+                          "data.frame(Date=",
+                          nombres[cuenta],
+                          "$date,",nombres[cuenta],"=",
+                          nombres[cuenta],"$rCont",
+                          ")")
+      
+      eval(parse(text=tablaString4))          
+    
+      tabla.rendimientosCont=tabla.rendimientosCont[-1,]
+      
+      tabla.rendimientosCont[,2]=na_replace(tabla.rendimientosCont[,2],fill=0)
+      
+  # Else de cuenta cuando else>=2:----------------------------------
+      
+
       
     } else {
       
-      eval(parse(text=paste0("conjuntoSalida$",nombres[cuenta],"=",nombres[cuenta])))
+      # Guarda lo extraído de precios al objeto tipo "lista" de salida:
       
-      # Es la segunda o mayor serie a integrar en la tabla:
+      eval(parse(text=paste0("conjuntoSalida[['",nombres[cuenta],"']]=",nombres[cuenta])))       
       
-      tablaString2=paste0("tabla.salida=cbind(tabla.salida,data.frame(Val",cuenta,"=as.numeric(matrix(NA,nrow(tabla.salida),1))))")
+      # Inserta valores de la primera serie de tiempo en la tabla de precios de salida:
+      tablaString=paste0("tabla.preciosb=",
+                         "data.frame(Date=",
+                         nombres[cuenta],
+                         "$date,",nombres[cuenta],"=",
+                         nombres[cuenta],"$adjusted",
+                         ")")
+      eval(parse(text=tablaString))
       
-      eval(parse(text=tablaString2))
+      tabla.preciosb[,2]=na_locf(tabla.preciosb[,2],option="locf")
       
-      # Determina la fecha inicial a evaluar en la serie de tiempo:  
+      tabla.precios=merge(tabla.precios,tabla.preciosb,by="Date",all=F)
       
-      minSerie=eval(parse(text=paste0("min(",nombres[cuenta],"$Date)")))
-      minTabla=min(tabla.salida$Date)
+      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
+      tablaString2=paste0("tabla.PLb=",
+                          "data.frame(Date=",
+                          nombres[cuenta],
+                          "$date,",nombres[cuenta],"=",
+                          nombres[cuenta],"$PL",
+                          ")")
       
-      if (minTabla<minSerie){
-        inicioFechas=max(which(tabla.salida$Date<=minSerie))
-      } else { 
-        inicioFechas=1L
-      }
-      # Cuenta de cada fecha a homonegenizar: 
+      eval(parse(text=tablaString2))  
+      tabla.PLb=tabla.PLb[-1,]
       
-      for (cuenta2 in inicioFechas:nrow(tabla.salida)){
-        
-        cat("\f")
-        print(paste0("Procesando RIC ",cuenta," de ",length(tickers)," (",
-                     tickers[cuenta],") fecha ",cuenta2," de ",nrow(tabla.salida)," periodicidad ",periodicidad))
-        
-        idFecha=eval(parse(text=paste0("max(which(",nombres[cuenta],"$Date<=tabla.salida$Date[cuenta2]))")))
-        eval(parse(text=paste0("tabla.salida$Val",cuenta,"[cuenta2]=",nombres[cuenta],"$Adj.Close[idFecha]")))
-      }
+      tabla.PLb[,2]=na_replace(tabla.PLb[,2],fill=0)
       
+      tabla.PL=merge(tabla.PL,tabla.PLb,by="Date",all=F)
+      
+      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
+      tablaString3=paste0("tabla.rendimientosAritb=",
+                          "data.frame(Date=",
+                          nombres[cuenta],
+                          "$date,",nombres[cuenta],"=",
+                          nombres[cuenta],"$rArit",
+                          ")")
+      
+      eval(parse(text=tablaString3))    
+      
+      tabla.rendimientosAritb=tabla.rendimientosAritb[-1,]
+      
+      tabla.rendimientosAritb[,2]=na_replace(tabla.rendimientosAritb[,2],fill=0)
+      
+      tabla.rendimientosArit=merge(tabla.rendimientosArit,tabla.rendimientosAritb,by="Date",all=F)
+      
+      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
+      tablaString4=paste0("tabla.rendimientosContb=",
+                          "data.frame(Date=",
+                          nombres[cuenta],
+                          "$date,",nombres[cuenta],"=",
+                          nombres[cuenta],"$rCont",
+                          ")")
+      
+      eval(parse(text=tablaString4))          
+      
+      tabla.rendimientosContb=tabla.rendimientosContb[-1,]
+      
+      tabla.rendimientosContb[,2]=na_replace(tabla.rendimientosContb[,2],fill=0)
+      
+      tabla.rendimientosCont=merge(tabla.rendimientosCont,tabla.rendimientosContb,by="Date",all=F)
+      
+  # Else cuenta >=2 termina aquí:    
     }
-    # Loop cuenta2 (fechas homogeneizadas) ends here:  
-    
-    # Corrige los textos "null" propios de Yahoo Finance y los convierte 
-    # a valor NA para ser corregidos posteriormente:
-    
-    naRowId=which(tabla.salida[,cuenta+1]=="null")        
-    
-    if (length(naRowId)>0){
-      tabla.salida[naRowId,cuenta+1]=NA
-    }
-    # Corrige los NA de la primera fila si y solo si hay valores en la segunda
-    
-    if (!is.na(tabla.salida[2,cuenta+1])){
-      
-      if (is.na(tabla.salida[1,cuenta+1])){
-        tabla.salida[1,cuenta+1]=tabla.salida[2,cuenta+1]
-      }
-    }
-    
-    # Corrige los valores de todas las primeras filas si la primera fila no ha sido corregida:
-    
-    if (is.na(tabla.salida[1,cuenta+1])) {
-      naRowId=which(is.na(tabla.salida[,cuenta+1]))
-      tabla.salida[naRowId,cuenta+1]=0
-    } 
-    
-    # Hace una revision final de que no queden valores NA en filas intermedias
-    # que no sean la primera o primeras:
-    
-    naRowId=which(is.na(tabla.salida[,cuenta+1]))    
-    
-    if (length(naRowId)>0){
-      tabla.salida[naRowId,cuenta+1]=tabla.salida[naRowId+1,cuenta+1]
-    }
+
+
     
     # cuenta loop ends here:  
   }  
+
+  colnames(tabla.precios)=c("Date",nombres)
+  colnames(tabla.PL)=c("Date",nombres)
+  colnames(tabla.rendimientosArit)=c("Date",nombres)
+  colnames(tabla.rendimientosCont)=c("Date",nombres)
   
-  
-  
-  # Genera ajustes finos de la tabla de salida y la anexa al objeto
-  colnames(tabla.salida)=c("Date",nombres)
-  
-  tabla.salida=as.data.frame(tabla.salida)
-  
-  conjuntoSalida[["tablaPrecios"]]=tabla.salida
-  
-  # calcular rendimientos cont?nuos y los anexa al objeto:
-  
-  tablaRendimientosC=tabla.salida
-  
-  tablaRendimientosC[2:nrow(tabla.salida),2:ncol(tabla.salida)]=log(as.numeric(as.matrix(tabla.salida[2:nrow(tabla.salida),2:ncol(tabla.salida)])))-
-    log(as.numeric(as.matrix(tabla.salida[1:(nrow(tabla.salida)-1),2:ncol(tabla.salida)])))
-  
-  tablaRendimientosC=tablaRendimientosC[-1,]
-  
-  # Corrige valores inf en los valores estimados e iguala a cero:
-  
-  for (a in 2:ncol(tablaRendimientosC)){
-    naRowId=which(is.infinite(tablaRendimientosC[,a]))
-    if (length(naRowId)>0){
-      tablaRendimientosC[naRowId,a]=0
-    }
-  }  
-  
-  # Guegra la tabla de rendimientos en el objeto de salida:    
-  conjuntoSalida[["tablaRendimientosC"]]=tablaRendimientosC
-  conjuntoSalida[["nombres"]]=nombres
+  conjuntoSalida[["tablaPrecios"]]=tabla.precios
+  conjuntoSalida[["tablaPL"]]=tabla.PL
+  conjuntoSalida[["tablaRendimientosArit"]]=tabla.rendimientosArit
+  conjuntoSalida[["tablaRendimientosCont"]]=tabla.rendimientosCont
   
   return(conjuntoSalida)
   # function ends here:
 }
 
-# Comando para extraer múltiples RICS con conversión cambiaria:====
-
-historico_multiples_preciosFX=function(tickers,FXrate="USDMXN=X",de,hasta,periodicidad="D"){
-  
-  nombres=tickers
-  
-  # Crea los nombres de la tabla de salida sin caracteres especiales de los tickers de ?ndices:
-  for (cuenta in 1:length(tickers)){
-    if (substr(nombres[cuenta],1,1)=="^"){
-      nombres[cuenta]=substr(tickers[cuenta],2,nchar(tickers[cuenta]))
-    }
-    
-    nombres[cuenta]=str_replace(nombres[cuenta],"=","")
-    
-  }
-  
-  # Extrae la divisa a convertir en algunos casos  
-  FX=FXrate
-  
-  
-  #length(nombres)
-  for (cuenta in 1:length(nombres)){
-    # Extrae 1 a 1 los hist?ricos de cada ticker y forma la tabal de salida
-    
-    queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
-                       "',de=de,hasta=hasta,periodicidad=periodicidad)")
-    
-    cat("\f")
-    print(paste0("Extrayendo RIC ",cuenta," de ",length(tickers)," (",
-                 tickers[cuenta],"), periodicidad ",periodicidad))
-    
-    eval(parse(text=queryString))
-    
-    # Anexa las columnas de datos a la tabla total de salida:
-    
-    if (cuenta<2){
-      
-      # Guarda lo extra?do de precios al objeto tipo "lista" de salida:
-      
-      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=",nombres[cuenta],")")))
-      
-      tablaString=paste0("tabla.salida=",
-                         "data.frame(Date=",
-                         nombres[cuenta],
-                         "$Date,",nombres[cuenta],"=",
-                         nombres[cuenta],"$Adj.Close",
-                         ")")
-      
-      eval(parse(text=tablaString))
-      
-      
-      
-    } else {
-      
-      eval(parse(text=paste0("conjuntoSalida$",nombres[cuenta],"=",nombres[cuenta])))
-      
-      # Es la segunda o mayor serie a integrar en la tabla:
-      
-      tablaString2=paste0("tabla.salida=cbind(tabla.salida,data.frame(Val",cuenta,"=as.numeric(matrix(NA,nrow(tabla.salida),1))))")
-      
-      eval(parse(text=tablaString2))
-      
-      # Determina la fecha inicial a evaluar en la serie de tiempo:  
-      
-      minSerie=eval(parse(text=paste0("min(",nombres[cuenta],"$Date)")))
-      minTabla=min(tabla.salida$Date)
-      
-      if (minTabla<minSerie){
-        inicioFechas=max(which(tabla.salida$Date<=minSerie))
-      } else { 
-        inicioFechas=1L
-      }
-      # Cuenta de cada fecha a homonegenizar: 
-      
-      for (cuenta2 in inicioFechas:nrow(tabla.salida)){
-        
-        cat("\f")
-        print(paste0("Procesando RIC ",cuenta," de ",length(tickers)," (",
-                     tickers[cuenta],") fecha ",cuenta2," de ",nrow(tabla.salida)," periodicidad ",periodicidad))
-        
-        idFecha=eval(parse(text=paste0("max(which(",nombres[cuenta],"$Date<=tabla.salida$Date[cuenta2]))")))
-        eval(parse(text=paste0("tabla.salida$Val",cuenta,"[cuenta2]=",nombres[cuenta],"$Adj.Close[idFecha]")))
-      }
-      # Loop cuenta2 (fechas homogeneizadas) ends here:        
-    }
-
-    
-    # Corrige los textos "null" propios de Yahoo Finance y los convierte 
-    # a valor NA para ser corregidos posteriormente:
-    
-    naRowId=which(tabla.salida[,cuenta+1]=="null")        
-    
-    if (length(naRowId)>0){
-      tabla.salida[naRowId,cuenta+1]=NA
-    }
-    # Corrige los NA de la primera fila si y solo si hay valores en la segunda
-    
-    if (!is.na(tabla.salida[2,cuenta+1])){
-      
-      if (is.na(tabla.salida[1,cuenta+1])){
-        tabla.salida[1,cuenta+1]=tabla.salida[2,cuenta+1]
-      }
-    }
-    
-    # Corrige los valores de todas las primeras filas si la primera fila no ha sido corregida:
-    
-    if (is.na(tabla.salida[1,cuenta+1])) {
-      naRowId=which(is.na(tabla.salida[,cuenta+1]))
-      tabla.salida[naRowId,cuenta+1]=0
-    } 
-    
-    # Hace una revision final de que no queden valores NA en filas intermedias
-    # que no sean la primera o primeras:
-    
-    naRowId=which(is.na(tabla.salida[,cuenta+1]))    
-    
-    if (length(naRowId)>0){
-      tabla.salida[naRowId,cuenta+1]=tabla.salida[naRowId+1,cuenta+1]
-    }
-    
-  }
-  # cuenta loop ends here:  
-  
-  # Homogeneiza la serie de tiempo:
-  
-  # Genera ajustes finos de la tabla de salida y la anexa al objeto
-  colnames(tabla.salida)=c("Date",nombres)
-  tabla.salida=as.data.frame(tabla.salida)  
-  conjuntoSalida[["tablaYahooFinance"]]=tabla.salida 
-  
-  # convierte a moneda local según se indica en el objeto FX:
-  
-  # Extrae los tipos de cambio históricos:
-  
-  queryStringFX=paste0("FXcuote","=historico_precio_mkts('",FXrate,
-                       "',de=de,hasta=hasta,periodicidad=periodicidad)")
-  eval(parse(text=queryStringFX)) 
-
-  
-  tabla.salidaFX=tabla.salida
-  
-  tabla.salidaFX=merge(tabla.salidaFX,FXcuote,by="Date",all.x=F)
-  # Convierte tabla.salida conforme a los T.C. de FXrate:
-  
-  
-  tablaFX=tabla.salidaFX[,c(1:(length(nombres)+1),((length(nombres)+1)+5))]
-
-  # Convierte al tipo de cambio actual:
-  for (cuenta in 2:(ncol(tablaFX)-1)){
-    tablaFX[,cuenta]=as.numeric(tablaFX[,cuenta])*as.numeric(tablaFX$Adj.Close ) 
-  }
-  # Elimina valores NA:
-  for (a in 2:ncol(tablaFX)){
-    tablaFX[,a]=na.locf(tablaFX[,a])  
-  }
-  
-  tablaFX2=data.frame(Date=tablaFX$Date,
-                     FXrate=tablaFX$Adj.Close)
-  
-  conjuntoSalida[["FXrate"]]=tablaFX2
-  
-  tablaFX=tablaFX[,1:(length(nombres)+1)]
-  
-  conjuntoSalida[["tablaPreciosFX"]]=tablaFX
-  
-  # calcular rendimientos contínuos y los anexa al objeto:
-  
-  tablaRendimientosC=tabla.salida
-  
-  tablaRendimientosC[2:nrow(tabla.salida),2:ncol(tabla.salida)]=log(as.numeric(as.matrix(tabla.salida[2:nrow(tabla.salida),2:ncol(tabla.salida)])))-
-    log(as.numeric(as.matrix(tabla.salida[1:(nrow(tabla.salida)-1),2:ncol(tabla.salida)])))
-  
-  tablaRendimientosC=tablaRendimientosC[-1,]
-  
-  # FX converted:
-  tablaRendimientosCFX=tablaFX
-  
-  tablaRendimientosCFX[2:nrow(tablaRendimientosCFX),2:ncol(tablaRendimientosCFX)]=log(as.numeric(as.matrix(tablaRendimientosCFX[2:nrow(tablaRendimientosCFX),2:ncol(tablaRendimientosCFX)])))-
-    log(as.numeric(as.matrix(tablaRendimientosCFX[1:(nrow(tablaRendimientosCFX)-1),2:ncol(tablaRendimientosCFX)])))
-  
-  tablaRendimientosCFX=tablaRendimientosCFX[-1,]
-  
-  
-  # Corrige valores inf en los valores estimados e iguala a cero:
-  
-  for (a in 2:ncol(tablaRendimientosC)){
-    naRowId=which(is.infinite(tablaRendimientosC[,a]))
-    if (length(naRowId)>0){
-      tablaRendimientosC[naRowId,a]=0
-    }
-    
-    for (a in 2:ncol(tablaRendimientosCFX)){
-      naRowId=which(is.infinite(tablaRendimientosCFX[,a]))
-      if (length(naRowId)>0){
-        tablaRendimientosCFX[naRowId,a]=0
-      }    
-      
-    }
-    
-  }
-  
-  # Agrega la tabla de rendimientos en el objeto de salida:    
-  conjuntoSalida[["tablaRendimientosC"]]=tablaRendimientosC
-  conjuntoSalida[["tablaRendimientosCFX"]]=tablaRendimientosCFX
-  conjuntoSalida[["nombres"]]=nombres
-  
-  return(conjuntoSalida)
-  # function ends here:
-  
-}
 
 # Comando de extracción de precios de ticker individual ====
 historico_precio_mkts <- function(ticker,de,hasta,periodicidad2)
@@ -397,8 +229,8 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad2)
   
   
   
-  deUnix=dateToUNIX(de)
-  hastaUnix=dateToUNIX(hasta)
+# deUnix=dateToUNIX(de)
+#  hastaUnix=dateToUNIX(hasta)
   
   switch(periodicidad2,
          "D"={per="1d"},
@@ -406,24 +238,15 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad2)
          "M"={per="1mo"}
          )
   
-#print(paste0("Extrayendo ",ticker2, " de ",deUnix," hasta ",hastaUnix))  
-#"https://query1.finance.yahoo.com/v7/finance/download/%5EMXX?period1=1642530890&period2=1674066890&interval=1d&events=history&includeAdjustedClose=true"
+# Extrae datos históricos de cotizaciones con tidyquant:
   
-URLYahoo=paste0("https://query1.finance.yahoo.com/v7/finance/download/",
-       ticker2,
-       "?period1=",
-       deUnix,
-       "&period2=",
-       hastaUnix,
-       "&interval=",
-       per,
-       "&events=history&includeAdjustedClose=true"
-        )  
-#cat("\f")
+tablaDatos = tq_get(ticker, from = de, to  = hasta)
 
-#print(URLYahoo)
+# Agrega P/L, rendimientos y rendimientos contínuos:
 
-tablaDatos=read.csv(URLYahoo)
+tablaDatos=tablaDatos%>%mutate(PL=adjusted / lag(adjusted), 
+                               rArit=(adjusted/lag(adjusted)-1)*100,
+                               rCont=(log(adjusted) - lag(log(adjusted)))*100)
 return(tablaDatos)
 }
 
