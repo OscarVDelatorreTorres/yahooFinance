@@ -31,7 +31,7 @@ La función historico_multiples_preciosFX tiene los siguientes argumentos:
 
 Para ver como funciona, puedes correr este ejemplos:
 
-## Extracción de uno o múltiples RIC o identificadores de Yahoo Finance convirtiendo la tabla o matriz de precios y la de rendimientos a la divisa o paridad cambiaria de preferencia (V 2.0 3-may-2024)
+## Extracción de uno o múltiples RIC o identificadores de Yahoo Finance convirtiendo la tabla o matriz de precios y la de rendimientos a la divisa o paridad cambiaria de preferencia
 
 En este ejemplo se extrae la información histórica de 2 o más RIC (Refinitiv Identifier Object) o identificador de Yahoo Finance (Refinitiv es de los principales proveedores de informaci{on para Yahoo Finance). La diferencia con la función historico_multiples_precios radica en que le proporcionamos el RIC o ticker de Yahoo Finance de la paridad cambiaria a la que deseamos convertir **toda** la tabla de precios y la tabla de rendimientos. Por ejemplo, si deseamos extraer una matriz de precios de acciones de los Estados Unidos para convertirla a pesos mexicanos, deberemos utilizar el RIC o ticker de Yahoo 'USDMNX=X' para descargar el histórico del tipo de cambio. Posteriormente, la función multiplica la paridad cambiaria de cada fecha por el precio descargado para cada RIC o ticker para convertir los valores a pesos mexicanos. Con esos precios expresados en pesos mexicanos se calcula la matriz o tabla de rendimientos del objeto de salida 'Datos'.
 
