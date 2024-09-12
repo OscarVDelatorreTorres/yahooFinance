@@ -168,7 +168,10 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
       
       # Guarda lo extraído de precios al objeto tipo "lista" de salida:
       
-      eval(parse(text=paste0("conjuntoSalida[['",nombres[cuenta],"']]=",nombres[cuenta])))       
+      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=as.data.frame(datosYahoo$",nombres[cuenta],"))")))       
+      
+      
+      #eval(parse(text=paste0("conjuntoSalida[['",nombres[cuenta],"']]=",nombres[cuenta])))       
       
       # Inserta valores de la primera serie de tiempo en la tabla de precios de salida:
       
