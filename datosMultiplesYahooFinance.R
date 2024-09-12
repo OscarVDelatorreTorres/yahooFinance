@@ -168,7 +168,7 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
       
       # Guarda lo extraído de precios al objeto tipo "lista" de salida:
       
-      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=as.data.frame(datosYahoo$",nombres[cuenta],"))")))       
+      eval(parse(text=paste0("conjuntoSalida$",nombres[cuenta],"=datosYahoo$",nombres[cuenta])))       
       
       
       #eval(parse(text=paste0("conjuntoSalida[['",nombres[cuenta],"']]=",nombres[cuenta])))       
@@ -253,6 +253,10 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
   conjuntoSalida[["tablaRendimientosArit"]]=tabla.rendimientosArit
   conjuntoSalida[["tablaRendimientosCont"]]=tabla.rendimientosCont
   
+  cat("\f")
+  print(paste0("Se terminó de extraer y procesar un total de ",length(tickers),
+               " tickers desde las BD de Yahoo Finance..."))  
+  print(paste0("Tickers procesados: ",paste0(tickers,collapse=", ")))
   return(conjuntoSalida)
   # function ends here:
 }
@@ -265,12 +269,15 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad,fxRate)
    stringTicker=substr(ticker,1,1)
   
   if (stringTicker=="^"){
-    ticker2=paste0("%5E",substr(ticker,2,nchar(ticker)))  
+    ticker2=paste0("%5E",substr(ticker,2,nchar(ticker))) 
+    nombre=substr(ticker,2,nchar(ticker))
   } else {
     ticker2=ticker
+    nombre=ticker
   }
   
   
+    
 # Extrae datos históricos de cotizaciones con tidyquant:
 
 print(paste0("Extrayendo ",ticker,"..."))
@@ -331,13 +338,14 @@ tablaDatos=tablaDatos%>%mutate(PL=adjusted / lag(adjusted),
                                rCont=(log(adjusted) - lag(log(adjusted)))*100)
 
 if (!(fxRate=="none")){
-stringSalida=paste0("objetoSalida=list(",ticker,"=tablaDatos,tablaFXYahoo=tablaDatosFX)")
+stringSalida=paste0("objetoSalida=list(",nombre,"=tablaDatos,tablaFXYahoo=tablaDatosFX)")
   
 } else {
-  stringSalida=paste0("objetoSalida=list(",ticker,"=tablaDatos)")
+  stringSalida=paste0("objetoSalida=list(",nombre,"=tablaDatos)")
   
 }
 
+print(paste0(nombre," extraído de Yahoo Finance..."))
 eval(parse(text=stringSalida))
 return(objetoSalida)
 }
