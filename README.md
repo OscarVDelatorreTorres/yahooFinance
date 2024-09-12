@@ -23,12 +23,13 @@ La función historico_multiples_preciosFX tiene los siguientes argumentos:
 4. periodicidad: es un objeto tipo character en donde se especifica la periodicidad de las series de tiempo. Los valores permitidos son (en este formato obligatorio) "D" para diaria (opción por defecto, "W" para semanal, "M" para mensual, "Q" para trimestral y "Y" para anual.
 6. fxRate: es la cadena de texto (objeto tipo character) que especifica la paridad cambiaria a extraer de Yahoo Finance. Por ejemplo "USDMXN=X" extrae el tipo de cambio pesos mexicanos por cada dólar de EEUU, "MXNUSD=X" extrae la paridad dólares de EEUU por cada peso mexicano, "EURUSD=X" la paridad dólares de EEUU por cada Euro, "CHFUSD=X" dólares de EEUU por cada franco suizo. **NOTA: es importante agregar =X para especificar que es un tipo de cambio**.
 7. whichToFX: es un objeto tipo character que puede tener 3 formas u opciones:
-  - un objeto character que diga "none" (debemos respetar la palabra con sus mayúsculas y minúsculas) para indicar que ninguno de los RIC o identificadores en el argumento tickers será convertido a la paridad cambiara en fxRate.
-  - 
+  - un objeto character que diga "none" (opción por defecto) **Nota: debemos respetar la palabra con sus mayúsculas y minúsculas) para indicar que ninguno de los RIC o identificadores en el argumento tickers será convertido a la paridad cambiara en fxRate**.
+  - un objeto character que disa "all" para señalar que todos los RIC o identificadores serán convertidos a la moneda especificada con la paridad den fxRate.
+  - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseade (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función maracará un error. De manera análoga, el TUR o FALSE se indica en el orden de los identificadores especificados en tickers**.
 
 # Ejemplo
 
-Para ver como funciona, puedes corres este ejemplos:
+Para ver como funciona, puedes correr este ejemplos:
 
 ## Extracción de uno o múltiples RIC o identificadores de Yahoo Finance convirtiendo la tabla o matriz de precios y la de rendimientos a la divisa o paridad cambiaria de preferencia (V 2.0 3-may-2024)
 
