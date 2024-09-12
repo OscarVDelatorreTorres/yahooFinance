@@ -83,7 +83,7 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
       
       queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
                          "',de=de,hasta=hasta,periodicidad=periodicidad,fxRate='",
-                         fxRate[a],"')")
+                         fxRate[cuenta],"')")
       
     } else {
 
