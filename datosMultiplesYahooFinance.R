@@ -11,7 +11,7 @@
 # V 2.1c 15-ago-2024: Se corrige un error de conversión a moneda de preferencia con la función merge de la librería zoo.
 # V 2.1c 27-ago-2024: Se corrige un error en la converciòn cambiaria de las acciones.
 # V 3.0  11-sept-2024: Dejó de funcionar la URL y se solventó al utilizar la librería de tydiquant,
-#                      así como yfinance de Python, por medio de reticulates para descargar información
+#                      así como yfinance de Python, por medio de reticulate para descargar información
 #                      de fundamentald e Yahoo Finance.
 
 # Verificación y/o instalación de las librerías necesarias:
@@ -275,13 +275,11 @@ if (!(fxRate=="none")){
   tablaDatosFX = tq_get(fxRate, from = de, to  = hasta)
   tablaDatosFX=data.frame(date=tablaDatosFX$date,
                           FX=tablaDatosFX$adjusted)
+  tablaDatosFX=tablaDatos%>%merge(tablaDatosFX,by="date",all.x=T)
   
+  tablaDatosFX=data.frame(date=tablaDatosFX$date,
+                          FX=tablaDatosFX$adjusted)  
 }
-
-tablaDatosFX=tablaDatos%>%merge(tablaDatosFX,by="date",all.x=T)
-
-tablaDatosFX=data.frame(date=tablaDatosFX$date,
-                        FX=tablaDatosFX$adjusted)
 
 tablaDatos$open=tablaDatos$open*tablaDatosFX$FX
 tablaDatos$high=tablaDatos$high*tablaDatosFX$FX
