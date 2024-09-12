@@ -267,10 +267,16 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad2,fxRate="none")
 #  hastaUnix=dateToUNIX(hasta)
   
 # Extrae datos históricos de cotizaciones con tidyquant:
-  
+
+print(paste0("Extrayendo ",ticker,"..."))
+   
 tablaDatos = tq_get(ticker, from = de, to  = hasta)
 
+# Convierte los datos originales al tipo de cambio deseado:
+
 if (!(fxRate=="none")){
+  
+print(paste0("Convirtiendo ",ticker," con paridad cambiaria ",fxRate,"..."))
   
   tablaDatosFX = tq_get(fxRate, from = de, to  = hasta)
   tablaDatosFX=data.frame(date=tablaDatosFX$date,
@@ -294,16 +300,20 @@ if (!(fxRate=="none")){
 
 switch(periodicidad2,
        "W"={
+         print(paste0("Convirtiendo ",ticker," a frecuencia",periodicidad2,"..."))          
          tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.weekly)
-         
+        
        },
        "M"={
+         print(paste0("Convirtiendo ",ticker," a frecuencia",periodicidad2,"..."))          
          tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.monthly)
        },
        "Q"={
+         print(paste0("Convirtiendo ",ticker," a frecuencia",periodicidad2,"..."))          
          tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.quarterly)
        },
        "Y"={
+         print(paste0("Convirtiendo ",ticker," a frecuencia",periodicidad2,"..."))          
          tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.yearly)
        }        
 )
