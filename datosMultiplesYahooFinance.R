@@ -29,9 +29,7 @@ if (!require(imputeTS)) {install.packages('imputeTS')
 # Comandos a ejecutar para extraer información de Yahoo para múltiples RICS:====
  
 
-historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
-                                     fxRate="USDMXN=X",
-                                     whichToFX="none"){
+historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="USDMXN=X",whichToFX="none"){
   
   nombres=tickers
   convertFXOk=FALSE
