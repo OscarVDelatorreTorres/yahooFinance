@@ -296,8 +296,8 @@ print(paste0("Convirtiendo ",ticker," con paridad cambiaria ",fxRate,"..."))
   tablaDatosFX=tablaDatos%>%merge(tablaDatosFX,by="date",all.x=T)
   
   tablaDatosFX=data.frame(date=tablaDatosFX$date,
-                          FX=tablaDatosFX$adjusted)  
-
+                          FX=tablaDatosFX$FX)  
+  tablaDatosFX$FX=na.locf(tablaDatosFX$FX,option="locf")
   
   tablaDatos$open=tablaDatos$open*tablaDatosFX$FX
   tablaDatos$high=tablaDatos$high*tablaDatosFX$FX
