@@ -52,10 +52,10 @@ tickerV=c("ALFAA.MX","MSFT","MSFT.MX","^MXX")
 deD="2023-01-01"
 hastaD=Sys.Date()
 per="D"
-fxRateD="USDMXN=X"
+paridadFX="USDMXN=X"
 convertirFX=c(FALSE,TRUE,TRUE,FALSE)
 
-Datos=historico_multiples_precios(tickers=tickerV,fxRate="USDMXN=X",de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
+Datos=historico_multiples_precios(tickers=tickerV,fxRate=paridadFX,de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
 ```
 
 
