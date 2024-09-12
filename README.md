@@ -10,11 +10,21 @@ Para cargar en R esta función en R debes correr el siguiente comando en tu chun
 source("https://raw.githubusercontent.com/OscarVDelatorreTorres/yahooFinance/main/datosMultiplesYahooFinance.R")
 ```
 Con esto, cargarás la función en tu ambiente de trabajo, junto con las funciones de apoyo para manipulación de fechas, así como la extracción individual de un solo RIC o identificador de Yahoo.
+
 # Sintaxis de la función historico_multiples_preciosFX()
+
+Esta función nos permite extraer una o varias series de tiempo de 1 o varios RIC o identificadores de Yahoo Finance. El objeto tipo lista de salida nos entregará los históricos de interés en lo individual, asi como una tabla de los precios, incrementos $P/L_{i,t}$, y variaciones porcentuales $r_{i,t}$ tanto aritméticas como en tiempo contínuo.
 
 La función historico_multiples_preciosFX tiene los siguientes argumentos:
 
-1.
+1. tickers: es un objeto o vector tipo character en donde se especifica el idendificador o identificadores de Yahoo Finance a descargar.
+2. de: es un objeto tipo character en donde se especifica la fecha inicial. Ejemplo de uso: "2024-09-11" debe ser la entrada para la fecha del 11 de septiembre de 2024. **NOTA: no se admite otro formato de fecha**.
+3. hasta: es un objeto similar al anterior pero para especificar la fecha final de los históricos a consultar **NOTA: hasta>de para que el código funcione**.
+4. periodicidad: es un objeto tipo character en donde se especifica la periodicidad de las series de tiempo. Los valores permitidos son (en este formato obligatorio) "D" para diaria (opción por defecto, "W" para semanal, "M" para mensual, "Q" para trimestral y "Y" para anual.
+6. fxRate: es la cadena de texto (objeto tipo character) que especifica la paridad cambiaria a extraer de Yahoo Finance. Por ejemplo "USDMXN=X" extrae el tipo de cambio pesos mexicanos por cada dólar de EEUU, "MXNUSD=X" extrae la paridad dólares de EEUU por cada peso mexicano, "EURUSD=X" la paridad dólares de EEUU por cada Euro, "CHFUSD=X" dólares de EEUU por cada franco suizo. **NOTA: es importante agregar =X para especificar que es un tipo de cambio**.
+7. whichToFX: es un objeto tipo character que puede tener 3 formas u opciones:
+  - un objeto character que diga "none" (debemos respetar la palabra con sus mayúsculas y minúsculas) para indicar que ninguno de los RIC o identificadores en el argumento tickers será convertido a la paridad cambiara en fxRate.
+  - 
 
 # Ejemplo
 
