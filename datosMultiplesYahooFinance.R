@@ -250,7 +250,7 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
 
 
 # Comando de extracción de precios de ticker individual ====
-historico_precio_mkts <- function(ticker,de,hasta,periodicidad2,fxRate="none")
+historico_precio_mkts <- function(ticker,de,hasta,periodicidad2,fxRate)
 {
  
    stringTicker=substr(ticker,1,1)
