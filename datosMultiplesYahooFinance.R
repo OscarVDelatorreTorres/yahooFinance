@@ -79,8 +79,20 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
   for (cuenta in 1:length(nombres)){
     # Extrae 1 a 1 los hist?ricos de cada ticker y forma la tabal de salida
     
-    queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
-                       "',de=de,hasta=hasta,periodicidad=periodicidad)")
+    if (isTRUE(whichToFX[a])){
+      
+      queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
+                         "',de=de,hasta=hasta,periodicidad=periodicidad,fxRate='",
+                         fxRate[a],"')")
+      
+    } else {
+
+      queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
+                         "',de=de,hasta=hasta,periodicidad=periodicidad,fxRate='none')")
+      
+    }
+    
+
     
     cat("\f")
     print(paste0("Extrayendo RIC ",cuenta," de ",length(tickers)," (",
@@ -250,7 +262,7 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
 
 
 # Comando de extracción de precios de ticker individual ====
-historico_precio_mkts <- function(ticker,de,hasta,periodicidad2,fxRate)
+historico_precio_mkts <- function(ticker,de,hasta,periodicidad,fxRate)
 {
  
    stringTicker=substr(ticker,1,1)
@@ -298,7 +310,7 @@ print(paste0("Convirtiendo ",ticker," con paridad cambiaria ",fxRate,"..."))
 
 # Convierte la periodicidad solicitada:
 
-switch(periodicidad2,
+switch(periodicidad,
        "W"={
          print(paste0("Convirtiendo ",ticker," a frecuencia",periodicidad2,"..."))          
          tablaDatos=tablaDatos%>%tq_transmute(mutate_fun = to.weekly)
