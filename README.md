@@ -47,8 +47,8 @@ En este ejemplo se extrae la información histórica de 2 o más RIC (Refinitiv 
 **Notas importantes:** Solamente la tabla de precios y rendimientos en el objeto de salida 'Datos' es la que se convertirá a la paridad cambiaria. Si deseamos convertir el precio de acciones mexicanas a dólares de los Estados Unidos o a otra divisa, deberemos utilizar el RIC o identificador inverso o recíproco de la paridad cambiaria. Por ejemplo, 'MXNUSD=X' para convertir los precios de pesos mexicanos a dólares de los Estados Unidos.
 
 ```{r}
-# Ejemplo para descargar los históricos diarios de grupo Alfa (en moneda local), Microsoft en EEUU (convertido a MXN), Microsoft en EEUU (convertido a MXN) y el índice S&P/BMV IPC (en moneda local), desde el 1 de enero de 2023 a la fecha actual:
-tickerV=c("ALFAA.MX","MSFT","MSFT.MX","^MXX")
+# Ejemplo para descargar los históricos diarios de grupo Alfa (en moneda local), Microsoft en EEUU (convertido a MXN), Mercado Libre en EEUU (convertido a MXN) y el índice S&P/BMV IPC (en moneda local), desde el 1 de enero de 2023 a la fecha actual:
+tickerV=c("ALFAA.MX","MSFT","MELI","^MXX")
 deD="2023-01-01"
 hastaD=Sys.Date()
 per="D"
