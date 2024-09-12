@@ -279,13 +279,16 @@ if (!(fxRate=="none")){
   
   tablaDatosFX=data.frame(date=tablaDatosFX$date,
                           FX=tablaDatosFX$adjusted)  
-}
 
-tablaDatos$open=tablaDatos$open*tablaDatosFX$FX
-tablaDatos$high=tablaDatos$high*tablaDatosFX$FX
-tablaDatos$low=tablaDatos$low*tablaDatosFX$FX
-tablaDatos$close=tablaDatos$close*tablaDatosFX$FX
-tablaDatos$adjusted=tablaDatos$adjusted*tablaDatosFX$FX
+  
+  tablaDatos$open=tablaDatos$open*tablaDatosFX$FX
+  tablaDatos$high=tablaDatos$high*tablaDatosFX$FX
+  tablaDatos$low=tablaDatos$low*tablaDatosFX$FX
+  tablaDatos$close=tablaDatos$close*tablaDatosFX$FX
+  tablaDatos$adjusted=tablaDatos$adjusted*tablaDatosFX$FX
+  
+  }
+
 
 # Convierte la periodicidad solicitada:
 
