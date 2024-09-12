@@ -11,7 +11,7 @@ Con esto, cargarás las funciones en tu ambiente de trabajo, junto con las funci
 
 Este repositorio está diseñado para compartir algunas funciones que hice para descargar datos de Yahoo Finance. De todas estas funciones, la de mayor interés puede ser historico_multiples_precios() que es la creada para extraccion de 1 o varios RICs o identificadores en una misma tabla y de manera secuencial.
 
-Con esta, se utiliza, como argumentos de entrada, un vector de texto con los ticker de las acciones fondos, futuros o índices que deseas descargar (Te sugiero consultar [Yahoo financer](https://finance.yahoo.com)), así como la fecha inicial, la final y la periodicidad. Esta última puede ser diaria ("D"), semanal ("W") o mensual ("M").
+Con esta, se utiliza, como argumentos de entrada, un vector de texto con los ticker de las acciones fondos, futuros o índices que deseas descargar (Te sugiero consultar [Yahoo finance](https://finance.yahoo.com)), así como la fecha inicial, la final y la periodicidad. Esta última puede ser diaria ("D"), semanal ("W") o mensual ("M").
 
 ### Sintaxis de la función historico_multiples_precios()
 
@@ -26,8 +26,8 @@ La función historico_multiples_preciosFX tiene los siguientes argumentos:
 6. fxRate: es la cadena de texto (objeto tipo character) que especifica la paridad cambiaria a extraer de Yahoo Finance. Por ejemplo "USDMXN=X" extrae el tipo de cambio pesos mexicanos por cada dólar de EEUU, "MXNUSD=X" extrae la paridad dólares de EEUU por cada peso mexicano, "EURUSD=X" la paridad dólares de EEUU por cada Euro, "CHFUSD=X" dólares de EEUU por cada franco suizo. **NOTA: es importante agregar =X para especificar que es un tipo de cambio**.
 7. whichToFX: es un objeto tipo character que puede tener 3 formas u opciones:
   - un objeto character que diga "none" (opción por defecto) **Nota: debemos respetar la palabra con sus mayúsculas y minúsculas) para indicar que ninguno de los RIC o identificadores en el argumento tickers será convertido a la paridad cambiara en fxRate**.
-  - un objeto character que disa "all" para señalar que todos los RIC o identificadores serán convertidos a la moneda especificada con la paridad den fxRate.
-  - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseade (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función maracará un error. De manera análoga, el TRUE o FALSE se indica en el orden de los identificadores especificados en tickers**.
+  - un objeto character que diga "all" para señalar que todos los RIC o identificadores serán convertidos a la moneda especificada con la paridad den fxRate.
+  - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseada (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función marcará un error. De manera análoga, el TRUE o FALSE se indica en el orden de los identificadores especificados en tickers**.
 
 La función de interés regresa un objeto tipo lista con los siguientes 5 objetos:
 
@@ -35,19 +35,19 @@ La función de interés regresa un objeto tipo lista con los siguientes 5 objeto
 2. Una tabla, llamada **tabla.PL**, que es similar a la anterior pero con el histórico de incremento de precios $\Delta P_{t}=P_t- P_{t-1}$ o $P/L_{t}$ 
 3. Una tabla similar a la anterior (**tabla.preciosArit**) pero con la variación porcentual aritmética de los precios $r_{i,t}=\left( \frac{P_t}{P_{t-1}} \right)-1$.
 4. Una tabla similar a la anterior (**tabla.preciosCont**) pero con la variación porcentual contínua de los precios $r_{i,t}=ln(P_t)-ln(P_{t-1})$.
-5. La tabla de los precios extraidos desde Yahoo Finance para cada ticker, en la conversión cambiaria solicitada con el argumento FXrate. El objeto individual hereda el nombre que le corresponde en el argumento de entrada ticker y presenta las columnas de fecha (date), precio de apertura (open), precio máximo (high), precio mínimo (low), precio de cierre (close), precio ajustado a splits (adjusted), volumen de operaciones (volume), increpento de precio (PL), variación porcential aritmética (rArit), y variación porcentual en tiempo contínuo (varCont).
+5. La tabla de los precios extraídos desde Yahoo Finance para cada ticker, en la conversión cambiaria solicitada con el argumento FXrate. El objeto individual hereda el nombre que le corresponde en el argumento de entrada ticker y presenta las columnas de fecha (date), precio de apertura (open), precio máximo (high), precio mínimo (low), precio de cierre (close), precio ajustado a splits (adjusted), volumen de operaciones (volume), incremento de precio (PL), variación porcentual aritmética (rArit), y variación porcentual en tiempo continuo (varCont).
 6. La tabla histórica de los tipos de cambio extraída, en de Yahoo Finance con el argumento fxRate. Esta tabla es la que se utiliza para convertir al tipo de cambio deseado, conforme a las indicaciones en los argumentos fxRate y whichToFX.
 
 **Nota de extracción de datos de Yahoo Finance**: Se puede descargar, con estas funciones, toda la información histórica que pueda proveer Yahoo Finance como son índices, precios de acciones, fondos de inversión, ETFs, FIBRAS (REITs) o paridades cambiarias. La conversión cambiaria con la función historico_multiples_preciosFX se hará multiplicando las unidades de medida por la paridad cambiaria utilizada en el insumo 'FXrate'.
 
 ### Ejemplo de la extracción de uno o múltiples RIC o identificadores de Yahoo Finance
 
-En este ejemplo se extrae la información histórica de 2 o más RIC (Refinitiv Identifier Object) o identificador de Yahoo Finance (Refinitiv es de los principales proveedores de informaci{on para Yahoo Finance). La diferencia con la función historico_multiples_precios radica en que le proporcionamos el RIC o ticker de Yahoo Finance de la paridad cambiaria a la que deseamos convertir **toda** la tabla de precios y la tabla de rendimientos. Por ejemplo, si deseamos extraer una matriz de precios de acciones de los Estados Unidos para convertirla a pesos mexicanos, deberemos utilizar el RIC o ticker de Yahoo 'USDMNX=X' para descargar el histórico del tipo de cambio. Posteriormente, la función multiplica la paridad cambiaria de cada fecha por el precio descargado para cada RIC o ticker para convertir los valores a pesos mexicanos. Con esos precios expresados en pesos mexicanos se calcula la matriz o tabla de rendimientos del objeto de salida 'Datos'.
+En este ejemplo se extrae la información histórica de 2 o más RIC (Refinitiv Identifier Object) o identificador de Yahoo Finance (Refinitiv es de los principales proveedores de información para Yahoo Finance). La diferencia con la función historico_multiples_precios radica en que le proporcionamos el RIC o ticker de Yahoo Finance de la paridad cambiaria a la que deseamos convertir **toda** la tabla de precios y la tabla de rendimientos. Por ejemplo, si deseamos extraer una matriz de precios de acciones de los Estados Unidos para convertirla a pesos mexicanos, deberemos utilizar el RIC o ticker de Yahoo 'USDMNX=X' para descargar el histórico del tipo de cambio. Posteriormente, la función multiplica la paridad cambiaria de cada fecha por el precio descargado para cada RIC o ticker para convertir los valores a pesos mexicanos. Con esos precios expresados en pesos mexicanos se calcula la matriz o tabla de rendimientos del objeto de salida 'Datos'.
 
-**Notas importantes:** Solamente la tabla de precios y rendimientos en el objeto de salida 'Datos' es la que se convertirá a la paridad cambiaria. Si deseamos convertir el precio de acciones mexicanas a dólares de los Estados Unidos o a otra divisa, deberemos utilizar el RIC o identificador inverso o recíproco de la paridad cambiaroa. Por ejemplo, 'MXNUSD=X' para convertir los precios de pesos mexicanos a dólares de los Estados Unidos.
+**Notas importantes:** Solamente la tabla de precios y rendimientos en el objeto de salida 'Datos' es la que se convertirá a la paridad cambiaria. Si deseamos convertir el precio de acciones mexicanas a dólares de los Estados Unidos o a otra divisa, deberemos utilizar el RIC o identificador inverso o recíproco de la paridad cambiaria. Por ejemplo, 'MXNUSD=X' para convertir los precios de pesos mexicanos a dólares de los Estados Unidos.
 
 ```{r}
-# Ejemplo para descargar los históricos diarios de grupo Alfa, Microsoft en EEUU, Micrososft en México y el índice S&P/BMV IPC, desde el 1 de enrdo de 2023 a la fecha actual:
+# Ejemplo para descargar los históricos diarios de grupo Alfa (en moneda local), Microsoft en EEUU (convertido a MXN), Microsoft en EEUU (convertido a MXN) y el índice S&P/BMV IPC (en moneda local), desde el 1 de enero de 2023 a la fecha actual:
 tickerV=c("ALFAA.MX","MSFT","MSFT.MX","^MXX")
 deD="2023-01-01"
 hastaD=Sys.Date()
@@ -55,7 +55,7 @@ per="D"
 fxRateD="USDMXN=X"
 convertirFX=c(FALSE,TRUE,TRUE,FALSE)
 
-Datos=historico_multiples_preciosFX(tickers=tickerV,FXrate="USDMXN=X",de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
+Datos=historico_multiples_precios(tickers=tickerV,FXrate="USDMXN=X",de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
 ```
 
 
