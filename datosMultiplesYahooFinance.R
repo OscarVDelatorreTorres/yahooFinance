@@ -79,18 +79,16 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
     
     if (isTRUE(whichToFX[cuenta])){
       
-      queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
+      queryString=paste0("datosYahoo=historico_precio_mkts('",tickers[cuenta],
                          "',de=de,hasta=hasta,periodicidad=periodicidad,fxRate='",
-                         fxRate[cuenta],"')")
+                         fxRate,"')")
       
     } else {
-
-      queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
+      
+      queryString=paste0("datosYahoo=historico_precio_mkts('",tickers[cuenta],
                          "',de=de,hasta=hasta,periodicidad=periodicidad,fxRate='none')")
       
     }
-    
-
     
     cat("\f")
     print(paste0("Extrayendo RIC ",cuenta," de ",length(tickers)," (",
@@ -106,70 +104,66 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
       
       # Guarda lo extraído de precios al objeto tipo "lista" de salida:
       
-      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=",nombres[cuenta],")")))       
+      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=as.data.frame(datosYahoo$",nombres[cuenta],"))")))       
       
-      # Guarda lo extraído de precios al objeto tipo "lista" de salida:
-      
-      eval(parse(text=paste0("conjuntoSalida=list(",nombres[cuenta],"=",nombres[cuenta],")")))      
     
       # Inserta valores de la primera serie de tiempo en la tabla de precios de salida:
-      tablaString=paste0("tabla.precios=",
-                         "data.frame(Date=",
+      
+      eval(parse(text=paste0("tablaDatos=conjuntoSalida$",nombres[cuenta])))
+      
+      tablaString=paste0("tabla.precios=data.frame(Date=tablaDatos$date,",
                          nombres[cuenta],
-                         "$date,",nombres[cuenta],"=",
-                         nombres[cuenta],"$adjusted",
-                         ")")
+                         "=tablaDatos$adjusted)")
+      
       eval(parse(text=tablaString))
       
-      tabla.precios[,2]=na_locf(tabla.precios[,2],option="locf")
+      tablaString=paste0("tabla.precios$",nombres[cuenta],"=na_locf(tabla.precios$",nombres[cuenta],",option='locf')")
       
+      eval(parse(text=tablaString))
       
-      
-      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
-      tablaString2=paste0("tabla.PL=",
-                          "data.frame(Date=",
+      # Inserta valores de la primera serie de tiempo en la tabla de P/L de salida:
+      tablaString2=paste0("tabla.PL=data.frame(Date=tablaDatos$date,",
                           nombres[cuenta],
-                          "$date,",nombres[cuenta],"=",
-                          nombres[cuenta],"$PL",
-                          ")")
+                          "=tablaDatos$PL)")
       
       eval(parse(text=tablaString2))  
       tabla.PL=tabla.PL[-1,]
       
-      tabla.PL[,2]=na_replace(tabla.PL[,2],fill=0)
+      tablaString2=paste0("tabla.PL$",nombres[cuenta],
+                         "=na_replace(tabla.PL$",nombres[cuenta],",fill=0)")
+      
+      eval(parse(text=tablaString2))
+      
       
       # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
-      tablaString3=paste0("tabla.rendimientosArit=",
-                         "data.frame(Date=",
-                         nombres[cuenta],
-                         "$date,",nombres[cuenta],"=",
-                         nombres[cuenta],"$rArit",
-                         ")")
+      tablaString3=paste0("tabla.rendimientosArit=data.frame(Date=tablaDatos$date,",
+                          nombres[cuenta],
+                          "=tablaDatos$rArit)")
       
       eval(parse(text=tablaString3))    
       
       tabla.rendimientosArit=tabla.rendimientosArit[-1,]
       
-      tabla.rendimientosArit[,2]=na_replace(tabla.rendimientosArit[,2],fill=0)
+      tablaString3=paste0("tabla.rendimientosArit$",nombres[cuenta],
+                         "=na_replace(tabla.rendimientosArit$",nombres[cuenta],",fill=0)")
+      
+      eval(parse(text=tablaString3))
       
       # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
-      tablaString4=paste0("tabla.rendimientosCont=",
-                          "data.frame(Date=",
+      tablaString4=paste0("tabla.rendimientosCont=data.frame(Date=tablaDatos$date,",
                           nombres[cuenta],
-                          "$date,",nombres[cuenta],"=",
-                          nombres[cuenta],"$rCont",
-                          ")")
+                          "=tablaDatos$rCont)")
       
-      eval(parse(text=tablaString4))          
-    
+      eval(parse(text=tablaString4))  
+      
       tabla.rendimientosCont=tabla.rendimientosCont[-1,]
       
-      tabla.rendimientosCont[,2]=na_replace(tabla.rendimientosCont[,2],fill=0)
+      tablaString4=paste0("tabla.rendimientosCont$",nombres[cuenta],
+                          "=na_replace(tabla.rendimientosCont$",nombres[cuenta],",fill=0)")
+      
+      eval(parse(text=tablaString4))          
       
   # Else de cuenta cuando else>=2:----------------------------------
-      
-
-      
     } else {
       
       # Guarda lo extraído de precios al objeto tipo "lista" de salida:
@@ -177,69 +171,71 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
       eval(parse(text=paste0("conjuntoSalida[['",nombres[cuenta],"']]=",nombres[cuenta])))       
       
       # Inserta valores de la primera serie de tiempo en la tabla de precios de salida:
-      tablaString=paste0("tabla.preciosb=",
-                         "data.frame(Date=",
+      
+      eval(parse(text=paste0("tablaDatos=conjuntoSalida$",nombres[cuenta])))
+      
+      tablaString=paste0("tabla.preciosb=data.frame(Date=tablaDatos$date,",
                          nombres[cuenta],
-                         "$date,",nombres[cuenta],"=",
-                         nombres[cuenta],"$adjusted",
-                         ")")
+                         "=tablaDatos$adjusted)")
+      
       eval(parse(text=tablaString))
       
-      tabla.preciosb[,2]=na_locf(tabla.preciosb[,2],option="locf")
+      tablaString=paste0("tabla.preciosb$",nombres[cuenta],
+                         "=na_locf(tabla.preciosb$",nombres[cuenta],",option='locf')")
+      
+      eval(parse(text=tablaString))
       
       tabla.precios=merge(tabla.precios,tabla.preciosb,by="Date",all=F)
       
-      # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
-      tablaString2=paste0("tabla.PLb=",
-                          "data.frame(Date=",
+      # Inserta valores de la primera serie de tiempo en la tabla de P/L de salida:
+      tablaString2=paste0("tabla.PLb=data.frame(Date=tablaDatos$date,",
                           nombres[cuenta],
-                          "$date,",nombres[cuenta],"=",
-                          nombres[cuenta],"$PL",
-                          ")")
+                          "=tablaDatos$PL)")
       
       eval(parse(text=tablaString2))  
       tabla.PLb=tabla.PLb[-1,]
       
-      tabla.PLb[,2]=na_replace(tabla.PLb[,2],fill=0)
+      tablaString2=paste0("tabla.PLb$",nombres[cuenta],
+                          "=na_replace(tabla.PLb$",nombres[cuenta],",fill=0)")
+      
+      eval(parse(text=tablaString2))
       
       tabla.PL=merge(tabla.PL,tabla.PLb,by="Date",all=F)
       
       # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
-      tablaString3=paste0("tabla.rendimientosAritb=",
-                          "data.frame(Date=",
+      tablaString3=paste0("tabla.rendimientosAritb=data.frame(Date=tablaDatos$date,",
                           nombres[cuenta],
-                          "$date,",nombres[cuenta],"=",
-                          nombres[cuenta],"$rArit",
-                          ")")
+                          "=tablaDatos$rArit)")
       
       eval(parse(text=tablaString3))    
       
       tabla.rendimientosAritb=tabla.rendimientosAritb[-1,]
       
-      tabla.rendimientosAritb[,2]=na_replace(tabla.rendimientosAritb[,2],fill=0)
+      tablaString3=paste0("tabla.rendimientosAritb$",nombres[cuenta],
+                          "=na_replace(tabla.rendimientosAritb$",nombres[cuenta],",fill=0)")
+      
+      eval(parse(text=tablaString3))
       
       tabla.rendimientosArit=merge(tabla.rendimientosArit,tabla.rendimientosAritb,by="Date",all=F)
       
       # Inserta valores de la primera serie de tiempo en la tabla de rendimientos aritméticos de salida:
-      tablaString4=paste0("tabla.rendimientosContb=",
-                          "data.frame(Date=",
+      tablaString4=paste0("tabla.rendimientosContb=data.frame(Date=tablaDatos$date,",
                           nombres[cuenta],
-                          "$date,",nombres[cuenta],"=",
-                          nombres[cuenta],"$rCont",
-                          ")")
+                          "=tablaDatos$rCont)")
       
-      eval(parse(text=tablaString4))          
+      eval(parse(text=tablaString4))  
       
       tabla.rendimientosContb=tabla.rendimientosContb[-1,]
       
-      tabla.rendimientosContb[,2]=na_replace(tabla.rendimientosContb[,2],fill=0)
+      tablaString4=paste0("tabla.rendimientosContb$",nombres[cuenta],
+                          "=na_replace(tabla.rendimientosContb$",nombres[cuenta],",fill=0)")
+      
+      eval(parse(text=tablaString4))   
       
       tabla.rendimientosCont=merge(tabla.rendimientosCont,tabla.rendimientosContb,by="Date",all=F)
       
   # Else cuenta >=2 termina aquí:    
     }
-
-
     
     # cuenta loop ends here:  
   }  
@@ -271,10 +267,6 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad,fxRate)
     ticker2=ticker
   }
   
-  
-  
-# deUnix=dateToUNIX(de)
-#  hastaUnix=dateToUNIX(hasta)
   
 # Extrae datos históricos de cotizaciones con tidyquant:
 
@@ -335,9 +327,16 @@ tablaDatos=tablaDatos%>%mutate(PL=adjusted / lag(adjusted),
                                rArit=(adjusted/lag(adjusted)-1)*100,
                                rCont=(log(adjusted) - lag(log(adjusted)))*100)
 
+if (!(fxRate=="none")){
+stringSalida=paste0("objetoSalida=list(",ticker,"=tablaDatos,tablaFXYahoo=tablaDatosFX)")
+  
+} else {
+  stringSalida=paste0("objetoSalida=list(",ticker,"=tablaDatos)")
+  
+}
 
-
-return(tablaDatos)
+eval(parse(text=stringSalida))
+return(objetoSalida)
 }
 
 
