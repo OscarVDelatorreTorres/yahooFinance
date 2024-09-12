@@ -11,7 +11,7 @@ source("https://raw.githubusercontent.com/OscarVDelatorreTorres/yahooFinance/mai
 ```
 Con esto, cargarás la función en tu ambiente de trabajo, junto con las funciones de apoyo para manipulación de fechas, así como la extracción individual de un solo RIC o identificador de Yahoo.
 
-# Sintaxis de la función historico_multiples_preciosFX()
+# Sintaxis de la función historico_multiples_precios()
 
 Esta función nos permite extraer una o varias series de tiempo de 1 o varios RIC o identificadores de Yahoo Finance. El objeto tipo lista de salida nos entregará los históricos de interés en lo individual, asi como una tabla de los precios, incrementos $P/L_{i,t}$, y variaciones porcentuales $r_{i,t}$ tanto aritméticas como en tiempo contínuo.
 
