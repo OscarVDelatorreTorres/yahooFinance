@@ -25,7 +25,7 @@ La función historico_multiples_preciosFX tiene los siguientes argumentos:
 7. whichToFX: es un objeto tipo character que puede tener 3 formas u opciones:
   - un objeto character que diga "none" (opción por defecto) **Nota: debemos respetar la palabra con sus mayúsculas y minúsculas) para indicar que ninguno de los RIC o identificadores en el argumento tickers será convertido a la paridad cambiara en fxRate**.
   - un objeto character que disa "all" para señalar que todos los RIC o identificadores serán convertidos a la moneda especificada con la paridad den fxRate.
-  - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseade (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función maracará un error. De manera análoga, el TUR o FALSE se indica en el orden de los identificadores especificados en tickers**.
+  - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseade (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función maracará un error. De manera análoga, el TRUE o FALSE se indica en el orden de los identificadores especificados en tickers**.
 
 # Ejemplo
 
