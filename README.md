@@ -55,7 +55,7 @@ per="D"
 fxRateD="USDMXN=X"
 convertirFX=c(FALSE,TRUE,TRUE,FALSE)
 
-Datos=historico_multiples_precios(tickers=tickerV,FXrate="USDMXN=X",de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
+Datos=historico_multiples_precios(tickers=tickerV,fxRate="USDMXN=X",de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
 ```
 
 
