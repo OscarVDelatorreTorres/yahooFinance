@@ -1,17 +1,19 @@
 # Funciones para extraer datos de Yahoo Finance
 
-Este repositorio está diseñado para compartir algunas funciones que hice para descargar datos de Yahoo Finance. De todas estas funciones, la de mayor interés puede ser historico_multiples_precios() que es la creada para extraccion de 1 o varios RICs o identificadores en una misma tabla y de manera secuencial.
-
-Con esta, se utiliza, como argumentos de entrada, un vector de texto con los ticker de las acciones fondos, futuros o índices que deseas descargar (Te sugiero consultar [Yahoo financer](https://finance.yahoo.com)), así como la fecha inicial, la final y la periodicidad. Esta última puede ser diaria ("D"), semanal ("W") o mensual ("M").
-
-Para cargar en R esta función en R debes correr el siguiente comando en tu chunk de R en Rstudio o en la consola, tu archivo de quarto o Rscript:
+Para cargar en R estas funciones en R debes correr el siguiente comando en tu chunk de R en Rstudio o en la consola, tu archivo de quarto o Rscript:
 
 ```{r}
 source("https://raw.githubusercontent.com/OscarVDelatorreTorres/yahooFinance/main/datosMultiplesYahooFinance.R")
 ```
-Con esto, cargarás la función en tu ambiente de trabajo, junto con las funciones de apoyo para manipulación de fechas, así como la extracción individual de un solo RIC o identificador de Yahoo.
+Con esto, cargarás las funciones en tu ambiente de trabajo, junto con las funciones de apoyo para manipulación de fechas, así como la extracción individual de un solo RIC o identificador de Yahoo.
 
-# Sintaxis de la función historico_multiples_precios()
+## Introducción a la función historico_multiples_precios()
+
+Este repositorio está diseñado para compartir algunas funciones que hice para descargar datos de Yahoo Finance. De todas estas funciones, la de mayor interés puede ser historico_multiples_precios() que es la creada para extraccion de 1 o varios RICs o identificadores en una misma tabla y de manera secuencial.
+
+Con esta, se utiliza, como argumentos de entrada, un vector de texto con los ticker de las acciones fondos, futuros o índices que deseas descargar (Te sugiero consultar [Yahoo financer](https://finance.yahoo.com)), así como la fecha inicial, la final y la periodicidad. Esta última puede ser diaria ("D"), semanal ("W") o mensual ("M").
+
+### Sintaxis de la función historico_multiples_precios()
 
 Esta función nos permite extraer una o varias series de tiempo de 1 o varios RIC o identificadores de Yahoo Finance. El objeto tipo lista de salida nos entregará los históricos de interés en lo individual, asi como una tabla de los precios, incrementos $P/L_{i,t}$, y variaciones porcentuales $r_{i,t}$ tanto aritméticas como en tiempo contínuo.
 
@@ -27,11 +29,18 @@ La función historico_multiples_preciosFX tiene los siguientes argumentos:
   - un objeto character que disa "all" para señalar que todos los RIC o identificadores serán convertidos a la moneda especificada con la paridad den fxRate.
   - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseade (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función maracará un error. De manera análoga, el TRUE o FALSE se indica en el orden de los identificadores especificados en tickers**.
 
-# Ejemplo
+La función de interés regresa un objeto tipo lista con los siguientes 5 objetos:
 
-Para ver como funciona, puedes correr este ejemplos:
+1. Un objeto llamado **tabla.precios** con la tabla con los precios de cierre y fechas homogeneizadas a las del primer ticker (ALFAA.MX). Los precios se expresan en base al tipo de cambio especificado con el identificador de Yahoo Finance ("USDMXN=X" para el tipo de cambio dólar de EEUU-peso mexicano). Esto se hace para los identificadores que se desea convertir, según el orden del objeto convertirFX.
+2. Una tabla, llamada **tabla.PL**, que es similar a la anterior pero con el histórico de incremento de precios $\Delta P_{t}=P_t- P_{t-1}$ o $P/L_{t}$ 
+3. Una tabla similar a la anterior (**tabla.preciosArit**) pero con la variación porcentual aritmética de los precios $r_{i,t}=\left( \frac{P_t}{P_{t-1}} \right)-1$.
+4. Una tabla similar a la anterior (**tabla.preciosCont**) pero con la variación porcentual contínua de los precios $r_{i,t}=ln(P_t)-ln(P_{t-1})$.
+5. La tabla de los precios extraidos desde Yahoo Finance para cada ticker, en la conversión cambiaria solicitada con el argumento FXrate. El objeto individual hereda el nombre que le corresponde en el argumento de entrada ticker y presenta las columnas de fecha (date), precio de apertura (open), precio máximo (high), precio mínimo (low), precio de cierre (close), precio ajustado a splits (adjusted), volumen de operaciones (volume), increpento de precio (PL), variación porcential aritmética (rArit), y variación porcentual en tiempo contínuo (varCont).
+6. La tabla histórica de los tipos de cambio extraída, en de Yahoo Finance con el argumento fxRate. Esta tabla es la que se utiliza para convertir al tipo de cambio deseado, conforme a las indicaciones en los argumentos fxRate y whichToFX.
 
-## Extracción de uno o múltiples RIC o identificadores de Yahoo Finance convirtiendo la tabla o matriz de precios y la de rendimientos a la divisa o paridad cambiaria de preferencia
+**Nota de extracción de datos de Yahoo Finance**: Se puede descargar, con estas funciones, toda la información histórica que pueda proveer Yahoo Finance como son índices, precios de acciones, fondos de inversión, ETFs, FIBRAS (REITs) o paridades cambiarias. La conversión cambiaria con la función historico_multiples_preciosFX se hará multiplicando las unidades de medida por la paridad cambiaria utilizada en el insumo 'FXrate'.
+
+### Ejemplo de la extracción de uno o múltiples RIC o identificadores de Yahoo Finance
 
 En este ejemplo se extrae la información histórica de 2 o más RIC (Refinitiv Identifier Object) o identificador de Yahoo Finance (Refinitiv es de los principales proveedores de informaci{on para Yahoo Finance). La diferencia con la función historico_multiples_precios radica en que le proporcionamos el RIC o ticker de Yahoo Finance de la paridad cambiaria a la que deseamos convertir **toda** la tabla de precios y la tabla de rendimientos. Por ejemplo, si deseamos extraer una matriz de precios de acciones de los Estados Unidos para convertirla a pesos mexicanos, deberemos utilizar el RIC o ticker de Yahoo 'USDMNX=X' para descargar el histórico del tipo de cambio. Posteriormente, la función multiplica la paridad cambiaria de cada fecha por el precio descargado para cada RIC o ticker para convertir los valores a pesos mexicanos. Con esos precios expresados en pesos mexicanos se calcula la matriz o tabla de rendimientos del objeto de salida 'Datos'.
 
@@ -48,16 +57,7 @@ convertirFX=c(FALSE,TRUE,TRUE,FALSE)
 
 Datos=historico_multiples_preciosFX(tickers=tickerV,FXrate="USDMXN=X",de=deD,hasta=hastaD,periodicidad=per,fxRate=fxRateD,whichToFX=convertirFX)
 ```
-En este ejemplo, el objeto Datos de salida es un objeto tipo lista con 5 de estos:
 
-1. Una tabla con los precios de cierre y fechas homogeneizadas a las del primer ticker (ALFAA.MX). Los precios se expresan en base al tipo de cambio especificado con el identificador de Yahoo Finance ("USDMXN=X" para el tipo de cambio dólar de EEUU-peso mexicano). Esto se hace para los identificadores que se desea convertir, según el orden del objeto convertirFX. (tabla.precios)
-2. Una tabla similar a la anterior pero con el histórico de incremento de precios $\Delta P_{t}=P_t- P_{t-1}$ o $P/L_{t}$ (tabla.PL)
-3. Una tabla similar a la anterior pero con la variación porcentual aritmética de los precios $r_{i,t}=\left( \frac{P_t}{P_{t-1}} \right)-1$ (tabla.preciosArit)
-4. Una tabla similar a la anterior pero con la variación porcentual contínua de los precios $r_{i,t}=ln(P_t)-ln(P_{t-1})$ (tabla.preciosCont)
-5. Los objetos de los precios extraidos desde Yahoo Finance para cada ticker, en la conversión cambiaria solicitada con el argumento FXrate.
-6. La tabla histórica de los tipos de cambio extraída, en forma "cruda" de Yahoo Finance.
-
-**Nota de extracción de datos de Yahoo Finance**: Se puede descargar, con estas funciones, toda la información histórica que pueda proveer Yahoo Finance como son índices, precios de acciones, fondos de inversión, ETFs, FIBRAS (REITs) o paridades cambiarias. La conversión cambiaria con la función historico_multiples_preciosFX se hará multiplicando las unidades de medida por la paridad cambiaria utilizada en el insumo 'FXrate'.
 
 # Control de versiones
 
