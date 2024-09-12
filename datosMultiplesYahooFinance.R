@@ -79,7 +79,7 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",
   for (cuenta in 1:length(nombres)){
     # Extrae 1 a 1 los hist?ricos de cada ticker y forma la tabal de salida
     
-    if (isTRUE(whichToFX[a])){
+    if (isTRUE(whichToFX[cuenta])){
       
       queryString=paste0(nombres[cuenta],"=historico_precio_mkts('",tickers[cuenta],
                          "',de=de,hasta=hasta,periodicidad=periodicidad,fxRate='",
