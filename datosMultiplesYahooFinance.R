@@ -389,7 +389,8 @@ fechaTexto=function(fecha){
                     textoMesYearText=textoMesYearText,
                     textoMesYearDash=textoMesYearDash,
                     textoFechaGuion=textoFechaGuion,
-                    textoFechaDash=textoFechaDash)
+                    textoFechaDash=textoFechaDash,
+                    mesTexto=mesTexto
   return(textosFechas)
 }
 
