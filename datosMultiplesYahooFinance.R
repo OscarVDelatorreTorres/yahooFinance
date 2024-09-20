@@ -380,7 +380,17 @@ fechaTexto=function(fecha){
   mesTexto=textosMes$Texto[which(textosMes$ID==mesId)]
   yearId=year(fecha)
   textoFecha=paste0(diaId," de ",mesTexto," del ",yearId)
-  return(textoFecha)
+  textoMesYearText=paste0(mesTexto," del ",yearId)
+  textoMesYearDash=paste0(mesTexto,"-",yearId)
+  textoFechaGuion=paste0(diaId,"-",mesTexto,"-",yearId)
+  textoFechaDash=paste0(diaId,"/",mesTexto,"/",yearId)
+  
+  textosFechas=list(textoFecha=textoFecha,
+                    textoMesYearText=textoMesYearText,
+                    textoMesYearDash=textoMesYearDash,
+                    textoFechaGuion=textoFechaGuion,
+                    textoFechaDash=textoFechaDash)
+  return(textosFechas)
 }
 
 print("Comandos de descarga de datos de burs?tiles instalados...")
