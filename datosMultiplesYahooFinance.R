@@ -13,6 +13,8 @@
 # V 3.0  11-sept-2024: Dejó de funcionar la URL y se solventó al utilizar la librería de tydiquant,
 #                      así como yfinance de Python, por medio de reticulate para descargar información
 #                      de fundamentald e Yahoo Finance.
+# V 3.1  21-oct-2024: Se corrige un error para el "=" en los futuros de Yahoo Finance para que el nombre 
+# no incluya tal caracter y genere errores al exportar los datos.
 
 # Verificación y/o instalación de las librerías necesarias:
 if (!require(tidyverse)) {install.packages('tidyverse')
@@ -275,6 +277,12 @@ historico_precio_mkts <- function(ticker,de,hasta,periodicidad,fxRate)
     ticker2=ticker
     nombre=ticker
   }
+   
+   charId=str_locate(ticker, "=")[1]
+   
+   if (!is.na(charId)){
+     nombre=paste0(substr(ticker,1,charId-1),substr(ticker,charId+1,str_count(ticker)))
+   } 
 
 
 
