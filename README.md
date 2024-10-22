@@ -64,3 +64,4 @@ Datos=historico_multiples_precios(tickers=tickerV,de=deD,hasta=hastaD,periodicid
 - V 1.0. 29-feb-2024: Funciones historico_multiples_precios y historico_precio_mkts con readme en GitHub.
 - V 2.0 03-may-2024: Se agrega función historico_multiples_preciosFX para convertir a la divisa deseada en Yahoo.
 - V 3.0 11-sept-2024: Se corrigió cambio de URL en Yahoo Finance y se utilizó en su lugar tidyquant. Se simplificó la extracción de series de tiempo de precios y variaciones porcentuales en una misma función: historico_multiples_preciosFX().
+- V 3.1 21-oct-2024: Se corrige un error para el "=" en los futuros de Yahoo Finance para que el nombre no incluya tal caracter y genere errores al exportar los datos.
