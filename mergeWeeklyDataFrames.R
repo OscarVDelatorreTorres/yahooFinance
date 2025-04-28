@@ -6,7 +6,7 @@
 #I created the first version of the mergeTSDataFrames function to merge two multivariate 
 # data.frames with different or equal periodicities
 
-mergeWeeklyDataFrame=function(df1,df2){
+mergeTSDataFrame=function(df1,df2,timeUnits){
   # Check if the first column of both data frames is a date vector
   if (!inherits(df1[[1]], "Date") || !inherits(df2[[1]], "Date")) {
     stop("Atention! The first column of both data frames must be a date vector.")
@@ -15,9 +15,10 @@ mergeWeeklyDataFrame=function(df1,df2){
   # Convert the first column of both data frames to the same format
   df1[[1]] <- as.Date(df1[[1]])
   df2[[1]] <- as.Date(df2[[1]])
+  getOption("lubridate.week.start", 7)
   
   nDates=nrow(df1)
-  df1[[1]]=floor_date(df1[[1]],unit="week",week_start=5) 
+  df1[[1]]=floor_date(df1[[1]],unit=timeUnits,week_start=7) 
   merged_df=cbind(df1,data.frame(matrix(NA,nrow=nDates,ncol=ncol(df2)-1)))
   colnames(merged_df)=c(names(df1),colnames(df2)[-1])
   mergedDfStartCol=ncol(df1)+1
