@@ -31,7 +31,7 @@ mergeTSDataFrame=function(df1,df2,timeUnits){
   # If there are remaining NA values in the merged data frame, 
   # fill them with the last non-NA value:
   for (a in 2:ncol(merged_df)){
-    merged_df[,a]=na.locf(merged_df[,a])
+    merged_df[,a]=na_locf(merged_df[,a])
   }
   
   # Return the merged data frame
