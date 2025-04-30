@@ -426,10 +426,11 @@ mergeTSDataFrame=function(df1,df2,timeUnits){
   merged_df=cbind(df1,data.frame(matrix(NA,nrow=nDates,ncol=ncol(df2)-1)))
   colnames(merged_df)=c(names(df1),colnames(df2)[-1])
   mergedDfStartCol=ncol(df1)+1
+  mergedDfStartRow=max(which(df1$Date<=min(df2$Date)))
   
   # Fill the merged data frame with the values from df1
   for (a in 1:nDates){
-    merged_df[a,mergedDfStartCol:ncol(df2)]=tail(df1[max(which(df2[,1]<=df2[a,1])),2:ncol(df2)],1)
+    merged_df[a,mergedDfStartCol:(ncol(df2)+1)]=tail(df2[max(which(df2[,1]<=df2[a,1])),2:ncol(df2)],1)
   }
   
   # If there are remaining NA values in the merged data frame, 
