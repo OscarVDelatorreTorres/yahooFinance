@@ -437,7 +437,7 @@ mergeTSDataFrame=function(df1,df2,timeUnits){
   
   # Fill the merged data frame with the values from df1
   for (a in mergedDfStartRow:nDates){
-    merged_df[a,mergedDfStartCol:(ncol(merged_df)-1)]=
+    merged_df[a,mergedDfStartCol:(ncol(merged_df))]=
       as.numeric(tail(df2[max(which(df2[,1]<=df2[a,1])),2:ncol(df2)],1))
   }
   
