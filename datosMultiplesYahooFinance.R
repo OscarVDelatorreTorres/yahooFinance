@@ -426,13 +426,23 @@ mergeTSDataFrame=function(df1,df2,timeUnits){
   merged_df=cbind(df1,data.frame(matrix(NA,nrow=nDates,ncol=ncol(df2)-1)))
   colnames(merged_df)=c(names(df1),colnames(df2)[-1])
   mergedDfStartCol=ncol(df1)+1
-  startDateRow=which(df2[,1]<=min(df1[,1]))
+
   
-  if (length(startDateRow)>0){
-    mergedDfStartRow=max(startDateRow)
+  # Checks if the min date is in df2:
+  
+  if (min(df1[[1]])<min(df2[[1]])) {
+    startDateRow=which(df2[,1]<=min(df1[,1]))
+    if (length(startDateRow)>0){
+      mergedDfStartRow=max(startDateRow)
+    } else {
+      mergedDfStartRow=1
+    }
+    
   } else {
     mergedDfStartRow=1
   }
+  
+
   
    
   # Fill the merged data frame with the values from df1
