@@ -29,14 +29,17 @@ La función historico_multiples_preciosFX tiene los siguientes argumentos:
   - un objeto character que diga "all" para señalar que todos los RIC o identificadores serán convertidos a la moneda especificada con la paridad den fxRate.
   - un vector lógico (TRUE/FALSE) que indique que RIC o identificador se convierte a la divisa deseada (TRUE) y cuál no (FALSE). **Nota: este vector debe tener la misma longitud o número de elementos que los del objeto tickers. De lo contrario la función marcará un error. De manera análoga, el TRUE o FALSE se indica en el orden de los identificadores especificados en tickers**.
 
-La función de interés regresa un objeto tipo lista con los siguientes 5 objetos:
+La función de interés regresa un objeto tipo lista con los siguientes 9 objetos:
 
-1. Un objeto llamado **tabla.precios** con la tabla con los precios de cierre y fechas homogeneizadas a las del primer ticker (ALFAA.MX). Los precios se expresan en base al tipo de cambio especificado con el identificador de Yahoo Finance ("USDMXN=X" para el tipo de cambio dólar de EEUU-peso mexicano). Esto se hace para los identificadores que se desea convertir, según el orden del objeto convertirFX.
-2. Una tabla, llamada **tabla.PL**, que es similar a la anterior pero con el histórico de incremento de precios $\Delta P_{t}=P_t- P_{t-1}$ o $P/L_{t}$ 
-3. Una tabla similar a la anterior (**tabla.preciosArit**) pero con la variación porcentual aritmética de los precios $r_{i,t}=\left( \frac{P_t}{P_{t-1}} \right)-1$.
-4. Una tabla similar a la anterior (**tabla.preciosCont**) pero con la variación porcentual contínua de los precios $r_{i,t}=ln(P_t)-ln(P_{t-1})$.
+1. Un objeto llamado **tabla.precios** con la tabla con los precios de cierre y fechas homogeneizadas a las del primer ticker (ALFAA.MX). Los precios se expresan en base al tipo de cambio especificado con el identificador de Yahoo Finance ("USDMXN=X" para el tipo de cambio dólar de EEUU-peso mexicano). Esto se hace para los identificadores que se desea convertir, según el orden del objeto convertirFX (tablaPrecios).
+2. Una tabla, llamada **tabla.PL**, que es similar a la anterior pero con el histórico de incremento de precios $\Delta P_{t}=P_t- P_{t-1}$ o $P/L_{t}$ (tablaPL).
+3. Una tabla similar a la anterior (**tabla.preciosArit**) pero con la variación porcentual aritmética de los precios $r_{i,t}=\left( \frac{P_t}{P_{t-1}} \right)-1$ (tablaRendimientosArit).
+4. Una tabla similar a la anterior (**tabla.preciosCont**) pero con la variación porcentual contínua de los precios $r_{i,t}=ln(P_t)-ln(P_{t-1})$ (tablaRendimientosCont).
 5. La tabla de los precios extraídos desde Yahoo Finance para cada ticker, en la conversión cambiaria solicitada con el argumento FXrate. El objeto individual hereda el nombre que le corresponde en el argumento de entrada ticker y presenta las columnas de fecha (date), precio de apertura (open), precio máximo (high), precio mínimo (low), precio de cierre (close), precio ajustado a splits (adjusted), volumen de operaciones (volume), incremento de precio (PL), variación porcentual aritmética (rArit), y variación porcentual en tiempo continuo (varCont).
-6. La tabla histórica de los tipos de cambio extraída, en de Yahoo Finance con el argumento fxRate. Esta tabla es la que se utiliza para convertir al tipo de cambio deseado, conforme a las indicaciones en los argumentos fxRate y whichToFX.
+6. La tabla **tabla.precios** en formato de base de datos para su mejor exposición para graficarla con ggplot2 o plotly (tablaPreciosFigura).
+7. La tabla **tabla.PL** en formato de base de datos para su mejor exposición para graficarla con ggplot2 o plotly (tablaPLFigura).
+8. La tabla **tabla.preciosArit** en formato de base de datos para su mejor exposición para graficarla con ggplot2 o plotly (tablaRendAritFigura).
+9. La tabla **tabla.preciosCont** en formato de base de datos para su mejor exposición para graficarla con ggplot2 o plotly (tablaRendContFigura).
 
 **Nota de extracción de datos de Yahoo Finance**: Se puede descargar, con estas funciones, toda la información histórica que pueda proveer Yahoo Finance como son índices, precios de acciones, fondos de inversión, ETFs, FIBRAS (REITs) o paridades cambiarias. La conversión cambiaria con la función historico_multiples_preciosFX se hará multiplicando las unidades de medida por la paridad cambiaria utilizada en el insumo 'FXrate'.
 
