@@ -244,7 +244,26 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
 
     # cuenta loop ends here:
   }
+  
 
+  tablaPreciosFigura=pivot_longer(tabla.precios,
+                                        cols=-Date,
+                                        names_to="RIC",
+                                        values_to="Precio")
+  tablaPLFigura=pivot_longer(tabla.PL,
+                                  cols=-Date,
+                                  names_to="RIC",
+                                  values_to="PL") 
+  tablaRendAritFigura=pivot_longer(tabla.rendimientosArit,
+                             cols=-Date,
+                             names_to="RIC",
+                             values_to="rendimientoAritmetico") 
+  tablaRendContFigura=pivot_longer(tabla.rendimientosCont,
+                                   cols=-Date,
+                                   names_to="RIC",
+                                   values_to="rendimientoContinuo")   
+  
+  
   colnames(tabla.precios)=c("Date",nombres)
   colnames(tabla.PL)=c("Date",nombres)
   colnames(tabla.rendimientosArit)=c("Date",nombres)
@@ -254,6 +273,10 @@ historico_multiples_precios=function(tickers,de,hasta,periodicidad="D",fxRate="U
   conjuntoSalida[["tablaPL"]]=tabla.PL
   conjuntoSalida[["tablaRendimientosArit"]]=tabla.rendimientosArit
   conjuntoSalida[["tablaRendimientosCont"]]=tabla.rendimientosCont
+  conjuntoSalida[["tablaPreciosFigura"]]=tablaPreciosFigura
+  conjuntoSalida[["tablaPLFigura"]]=tablaPLFigura
+  conjuntoSalida[["tablaRendAritFigura"]]=tablaRendAritFigura
+  conjuntoSalida[["tablaRendContFigura"]]=tablaRendContFigura
 
   cat("\f")
   print(paste0("Se terminó de extraer y procesar un total de ",length(tickers),
